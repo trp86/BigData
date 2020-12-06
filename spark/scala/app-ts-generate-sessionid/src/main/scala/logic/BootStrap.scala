@@ -12,6 +12,8 @@ object BootStrap extends App{
   import spark.implicits._
 
   val df = Seq(("Tim",23),("Tom",34)).toDF("name","age")
+  println("DataFrame Count:---"+df.count())
+
   df.show
 
 }
