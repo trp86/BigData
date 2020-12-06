@@ -1,9 +1,8 @@
-package com.practise.spark.scala.generatesessionid
-
+package logic
 
 import org.apache.spark.sql.SparkSession
-object BootStrap extends App{
 
+object BootStrap extends App{
 
   val spark = SparkSession
     .builder()
@@ -12,7 +11,7 @@ object BootStrap extends App{
     .getOrCreate()
   import spark.implicits._
 
-  val df = Seq(1).toDF
-df.show
+  val df = Seq(("Tim",23),("Tom",34)).toDF("name","age")
+  df.show
 
 }

@@ -4,7 +4,22 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e16afbf4-fea0-4637-b8d5-c6840b16da73" name="Default Changelist" comment="" />
+    <list default="true" id="c3880621-720e-487f-bd01-27cebc067c0f" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/sessionIdGenerator/src/main/scala/com/practise/spark/scala/generatesessionid/JobConf.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/scala.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sessionIdGenerator/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/sessionIdGenerator/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sessionIdGenerator/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/sessionIdGenerator/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sessionIdGenerator/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/sessionIdGenerator/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sessionIdGenerator/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/sessionIdGenerator/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sessionIdGenerator/sessionIdGenerator.iml" beforeDir="false" afterPath="$PROJECT_DIR$/sessionIdGenerator/sessionIdGenerator1.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sessionIdGenerator/src/main/scala/com/practise/spark/scala/generatesessionid/BootStrap.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sessionIdGenerator/src/main/scala/com/practise/spark/scala/generatesessionid/BootStrap.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sessionIdGenerator/target/classes/com/practise/spark/scala/generatesessionid/BootStrap$.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sessionIdGenerator/target/classes/com/practise/spark/scala/generatesessionid/BootStrap$delayedInit$body.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sessionIdGenerator/target/classes/com/practise/spark/scala/generatesessionid/BootStrap.class" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -13,10 +28,14 @@
   <component name="CodeStyleSettingsInfer">
     <option name="done" value="true" />
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+  </component>
   <component name="ProjectCodeStyleSettingsMigration">
     <option name="version" value="1" />
   </component>
-  <component name="ProjectId" id="1lFV3nsDDYUsrsAJWsOqKawch51" />
+  <component name="ProjectId" id="1lIUOZ5pHCaoebg9USNb0i1vhyg" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -24,18 +43,29 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="settings.editor.selected.configurable" value="build.tools" />
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="e16afbf4-fea0-4637-b8d5-c6840b16da73" name="Default Changelist" comment="" />
-      <created>1607192630189</created>
+      <changelist id="c3880621-720e-487f-bd01-27cebc067c0f" name="Default Changelist" comment="" />
+      <created>1607284069379</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1607192630189</updated>
+      <updated>1607284069379</updated>
     </task>
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>
