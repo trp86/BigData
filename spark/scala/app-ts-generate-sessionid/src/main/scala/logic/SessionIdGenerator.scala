@@ -13,7 +13,7 @@ object SessionIdGenerator {
   def process(spark:SparkSession): Unit = {
 
     //Creating dataframe from a csv file location
-    val rawDataframe = spark.read.csv("src/main/resources/source").toDF("click_ts", "user_id")
+    val rawDataframe = spark.read.format("csv").option("header", "true").load("src/main/resources/source")
 
     //Calling getSessionIds method to create a dataframe with session_id and activity_time
     //Adding columns year,month and date.Will be used for partitioning
