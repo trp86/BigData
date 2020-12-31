@@ -4,16 +4,14 @@ import org.apache.spark.sql.SparkSession
 
 object BootStrap extends App{
 
+  //Creating spark session
   val spark = SparkSession
     .builder()
-    .appName("Spark SQL basic example")
+    .appName("app-ts-generate-sessionid")
     .config("spark.master", "local[1]")
     .getOrCreate()
-  import spark.implicits._
 
-  val df = Seq(("Tim",23),("Tom",34)).toDF("name","age")
-  println("DataFrame Count:---"+df.count())
-
-  df.show
+  //Execution starting point
+  SessionIdGenerator.process(spark)
 
 }
