@@ -95,10 +95,26 @@ Below are the components which are the part of installation on **Ubuntu 20.04.1 
   $ sudo mkdir /var/lib/kafka/data
 ```
 
-- Allow kafka topics deletion
+- Allow kafka topics deletion and set the log dir
 
-   NOTE: By default, Kafka doesn’t allow us to delete topics. To be able to delete topics, find the line (delete.topic.enable)and change it to true.
+   NOTE: By default, Kafka doesn’t allow us to delete topics. To be able to delete topics, find the line (delete.topic.enable) and change it to true.
+   
+   Open the server.properties and perform the below changes 
 ```    
   $ sudo vi /opt/kafka/config/server.properties
+  delete.topic.enable = true
+  log.dirs=/var/lib/kafka/data
+  
 ```
-   
+
+- Ensure Permission of Directories
+```    
+  $ sudo chown -R kafka:nogroup /opt/kafka
+  $ sudo chown -R kafka:nogroup /var/lib/kafka
+``` 
+
+- Start Zookeeper and Kafka
+```    
+  $ sh /opt/kafka/bin/zookeeper-server-start.sh /opt/kafka/config/zookeeper.properties
+  $ sudo /opt/kafka/bin/kafka-server-start.sh /opt/kafka/config/server.properties
+``` 
