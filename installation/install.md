@@ -118,3 +118,41 @@ Below are the components which are the part of installation on **Ubuntu 20.04.1 
   $ sh /opt/kafka/bin/zookeeper-server-start.sh /opt/kafka/config/zookeeper.properties
   $ sudo /opt/kafka/bin/kafka-server-start.sh /opt/kafka/config/server.properties
 ``` 
+
+**URL helped to resolve kafka installation issues** :
+https://stackoverflow.com/questions/43293870/i-cant-run-zookeeper/43300155
+https://stackoverflow.com/questions/59481878/unable-to-start-kafka-with-zookeeper-kafka-common-inconsistentclusteridexceptio
+
+- Create 3 node kafka cluster (OPTIONAL)
+
+    - Make 3 copies of server.properties and name them as server0.properties,server1.properties and server2.properties
+    - Change the below parameters in server0.properties
+    ```    
+  broker.id=0
+  listeners=PLAINTEXT://:9092
+  log.dirs=/var/lib/kafka/data-0
+  ``` 
+    - Change the below parameters in server1.properties
+    ```    
+  broker.id=1
+  listeners=PLAINTEXT://:9093
+  log.dirs=/var/lib/kafka/data-1
+  ``` 
+    - Change the below parameters in server2.properties
+    ```    
+  broker.id=2
+  listeners=PLAINTEXT://:9094
+  log.dirs=/var/lib/kafka/data-2
+  ``` 
+    - Start zookeeper
+    ```    
+  $ sh /opt/kafka/bin/zookeeper-server-start.sh /opt/kafka/config/zookeeper.properties
+  $ sudo /opt/kafka/bin/kafka-server-start.sh /opt/kafka/config/server0.properties
+  $ sudo /opt/kafka/bin/kafka-server-start.sh /opt/kafka/config/server1.properties
+  $ sudo /opt/kafka/bin/kafka-server-start.sh /opt/kafka/config/server2.properties
+
+  ```   
+
+
+
+
