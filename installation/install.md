@@ -59,3 +59,17 @@ Below are the components which are the part of installation on **Ubuntu 20.04.1 
   $ echo 'export PATH=$SCALA_HOME/bin:$PATH' >> ~/.bashrc 
   $ source ~/.bashrc
 ```
+
+
+## Step 4 - Install Intellij
+**Reference URL** : https://linuxconfig.org/how-to-install-intellij-idea-on-ubuntu-20-04-linux-desktop
+
+- Install the classic version of intellij
+```    
+  $ sudo snap install intellij-idea-community --classic
+```
+
+- To start the IntelliJ IDEA
+```    
+  $ intellij-idea-community
+```
