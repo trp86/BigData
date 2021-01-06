@@ -73,3 +73,32 @@ Below are the components which are the part of installation on **Ubuntu 20.04.1 
 ```    
   $ intellij-idea-community
 ```
+
+
+## Step 5 - Install Apache kafka_2.11-2.4.0 
+**Reference URL** : https://hevodata.com/blog/how-to-install-kafka-on-ubuntu/
+
+- Download kafka installable
+```    
+  $ wget "http://www-eu.apache.org/dist/kafka/2.4.0/kafka_2.11-2.4.0.tgz
+```
+
+- Create a directory for extracting Kafka
+```    
+  $ sudo mkdir /opt/kafka
+  $ sudo tar -xvzf kafka_2.11-2.4.0.tgz --directory /opt/kafka
+```
+
+- Create a directory where kafka persists data
+```    
+  $ sudo mkdir /var/lib/kafka
+  $ sudo mkdir /var/lib/kafka/data
+```
+
+- Allow kafka topics deletion
+
+NOTE: By default, Kafka doesn’t allow us to delete topics. To be able to delete topics, find the line (delete.topic.enable)and change it to true.
+```    
+  $ sudo vi /opt/kafka/config/server.properties
+```
+   
