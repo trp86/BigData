@@ -162,3 +162,35 @@ https://stackoverflow.com/questions/59481878/unable-to-start-kafka-with-zookeepe
 ``` 
 
 
+## Step 6 - Install Apache spark-2.4.7-bin-hadoop2.7
+
+- Create spark installation directory and traverse
+```    
+  $ sudo mkdir -p /opt/spark
+  $ cd /opt/spark
+```
+
+- Download the installable and unzip it
+```    
+  $ sudo wget https://downloads.apache.org/spark/spark-2.4.7/spark-2.4.7-bin-hadoop2.7.tgz
+  $ tar -xzvf spark-2.4.7-bin-hadoop2.7.tgz .
+```
+
+- Set SPARK HOME
+```    
+  $ export SPARK_HOME=/root/spark-2.4.7-bin-hadoop2.7
+  $ export PATH=$PATH:$SPARK_HOME/bin
+  $ source ~/.bashrc
+```
+
+## Step 7 - Install GIT
+
+**Reference URL** : https://www.digitalocean.com/community/tutorials/how-to-install-git-on-ubuntu-20-04#installing-git-with-default-packages
+
+NOTE: Git is likely already installed in Ubuntu 20.04 server.
+
+- Create spark installation directory and traverse
+```    
+  $ git config --global user.name <git user name>
+  $ git config --global user.email <emailid>
+```
