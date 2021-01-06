@@ -189,7 +189,7 @@ https://stackoverflow.com/questions/59481878/unable-to-start-kafka-with-zookeepe
 
 NOTE: Git is likely already installed in Ubuntu 20.04 server.
 
-- Create spark installation directory and traverse
+- Configure GIT
 ```    
   $ git config --global user.name <git user name>
   $ git config --global user.email <emailid>
