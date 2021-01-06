@@ -1,4 +1,4 @@
-# Up & Run Real-time Data Processing dev environment #
+# Build Real-time Data Processing development environment #
 
 Below are the components which are the part of installation on **Ubuntu 20.04.1 LTS**
 - Full Update & Upgrade
