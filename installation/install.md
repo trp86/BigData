@@ -144,7 +144,7 @@ https://stackoverflow.com/questions/59481878/unable-to-start-kafka-with-zookeepe
   listeners=PLAINTEXT://:9094
   log.dirs=/var/lib/kafka/data-2
   ``` 
-    - Start zookeeper
+    - Start 3 node kafka cluster
     ```    
   $ sh /opt/kafka/bin/zookeeper-server-start.sh /opt/kafka/config/zookeeper.properties
   $ sudo /opt/kafka/bin/kafka-server-start.sh /opt/kafka/config/server0.properties
@@ -153,6 +153,12 @@ https://stackoverflow.com/questions/59481878/unable-to-start-kafka-with-zookeepe
 
   ```   
 
-
+- Kafka commands to test the installation
+```    
+  $ sh /opt/kafka/bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic test1
+  $ sh /opt/kafka/bin/kafka-topics.sh --list --zookeeper localhost:2181
+  $ sh /opt/kafka/bin/kafka-console-producer.sh --broker-list localhost:9095 --topic test1
+  $ sh /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server localhost:9095 --topic test1 --from-beginning
+``` 
 
 
