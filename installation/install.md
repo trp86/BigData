@@ -30,11 +30,32 @@ Below are the components which are the part of installation on **Ubuntu 20.04.1 
   $ java -version
 ```
 
-- Set JAVA home
+- Set JAVA HOME
 ```    
   $ cat >> /etc/environment <<EOL
   	JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
   	JRE_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre
   	EOL
   $	source /etc/environment
+```
+
+
+## Step 3 - Install Scala 2.11.11
+
+- Create an installation directory
+```    
+  $ mkdir /usr/local/src/scala
+```
+
+- Download the scala installable and unzip it
+```    
+  $ wget http://www.scala-lang.org/files/archive/scala-2.11.11.tgz
+  $ tar xvf scala-2.11.11.tgz -C /usr/local/src/scala/ 
+```
+
+- Set SCALA HOME
+```    
+  $ echo 'export SCALA_HOME=/usr/local/src/scala/scala-2.11.11' >> ~/.bashrc
+  $ echo 'export PATH=$SCALA_HOME/bin:$PATH' >> ~/.bashrc 
+  $ source ~/.bashrc
 ```
