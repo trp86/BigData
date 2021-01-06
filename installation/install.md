@@ -97,7 +97,7 @@ Below are the components which are the part of installation on **Ubuntu 20.04.1 
 
 - Allow kafka topics deletion
 
-NOTE: By default, Kafka doesn’t allow us to delete topics. To be able to delete topics, find the line (delete.topic.enable)and change it to true.
+   NOTE: By default, Kafka doesn’t allow us to delete topics. To be able to delete topics, find the line (delete.topic.enable)and change it to true.
 ```    
   $ sudo vi /opt/kafka/config/server.properties
 ```
