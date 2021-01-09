@@ -1,19 +1,25 @@
 package logic
 
-import org.apache.spark.sql.{DataFrame, Row, SparkSession}
+import org.apache.log4j.Logger
+import org.apache.spark.sql.{DataFrame,SparkSession}
 import org.joda.time.DateTime
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.expressions.Window
 import org.apache.spark.sql.functions.udf
+
 import java.text.SimpleDateFormat
 import org.joda.time.Seconds
 
 object SessionIdGenerator {
 
+  val log = Logger.getLogger(SessionIdGenerator.getClass)
+
   def process(spark:SparkSession): Unit = {
 
     //Creating dataframe from a csv file location
     val rawDataframe = spark.read.format("csv").option("header", "true").load("src/main/resources/source")
+    log.info("Created Raw dataframe.")
+    log.debug("Raw dataframe contents."+rawDataframe.collect())
 
     //Calling getSessionIds method to create a dataframe with session_id and activity_time
     //Adding columns year,month and date.Will be used for partitioning
@@ -21,7 +27,9 @@ object SessionIdGenerator {
       .withColumn("yr",year(col("click_ts")))
       .withColumn("mm",month(col("click_ts")))
       .withColumn("dd",dayofmonth(col("click_ts")))
+    log.info("Added partition columns to Dataframe.")
 
+    log.info("Writing the dataframe to sink in parquet format partitioned by \"yr\",\"mm\",\"dd\"")
    //Writing to sink in parquet format
     finalDataframe.coalesce(1).
       write.partitionBy("yr","mm","dd").mode("overwrite").parquet("src/main/resources/sink")
@@ -73,11 +81,13 @@ object SessionIdGenerator {
       .withColumn("ts_converted", to_timestamp(col("click_ts"), "yyyy-MM-dd HH:mm:ss")) //Typecasting string to timestamp
       .withColumn("ts_lag", lag(col("ts_converted"), 1) //Lag column
         .over(Window.partitionBy(col("user_id")).orderBy("click_ts")))
+    log.info("Added two columns ts_converted and ts_lag to existing dataframe.")
 
     //Adding a column ts_diff (time difference of current click time and previous click time)
     val dataframeWithTimeDifferenceColumn = dataframeWithClickTimeAsTimestamp.withColumn("ts_diff",
       (unix_timestamp(col("ts_converted")) - unix_timestamp(col("ts_lag"))))
       .withColumn("ts_diff", when(col("ts_diff").isNull, 0).otherwise(col("ts_diff")))
+    log.info("Added column ts_diff to existing dataframe.")
 
     //GROUP BY on user_id and creating lists for click_ts and ts_diff
     val dataframeWithAggregatedValues = dataframeWithTimeDifferenceColumn.groupBy("user_id").
@@ -85,6 +95,7 @@ object SessionIdGenerator {
         collect_list(col("click_ts")).as("click_ts_list"),
         collect_list(col("ts_diff")).as("ts_diff_list")
       )
+    log.info("Group by on user_id column and generated click_ts_list & ts_diff_list column.")
 
     //UDF definition for generating unique session ids
     val generateSessionId_UDF = udf[Seq[(String, String, Long)], String, Seq[String], Seq[Long]](generateSessionId)
@@ -99,6 +110,7 @@ object SessionIdGenerator {
         col("session_id_and_click_time._2").as("click_ts"),
         col("session_id_and_click_time._3").as("activity_time"))
       .withColumn("session_id", md5(col("session_id")))
+    log.info("Dataframe with session_id,click_ts,activity_time generated.")
 
     finalDataframeWithSessionID
 
