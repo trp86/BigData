@@ -19,11 +19,11 @@ click_ts | user_id
 
 Below are the columns description for the data:-
 
-###### click_ts:- Contains eventtimestamp
-###### user_id:- Contains user id
+#### click_ts:- Contains eventtimestamp
+#### user_id:- Contains user id
 
 "app-ts-generate-sessionid" will enrich the data with sessionId.
-######  Session Definition:- Session expires after inactivity of 60 minutes,because of inactivity no clickstream record will be generated.It remains active for total duration of 2 hours.
+#####  Session Definition:- Session expires after inactivity of 60 minutes,because of inactivity no clickstream record will be generated.It remains active for total duration of 2 hours.
 
 "app-ts-generate-sessionid" will output the data in the below way.
 
@@ -42,7 +42,24 @@ u2 | 6597e108764db28de7fa2e086640cc11 | 2018-01-02 11:00:00 | 0
 
 Below are the column description for the output data by app-ts-generate-sessionid:-
 
-###### user_id:- unique id for a user
-###### sessionId:- unique id for a session
-###### click_time:- event timestamp
-###### activity_time:- total time a user was active
+#### user_id:- unique id for a user
+#### sessionId:- unique id for a session
+#### click_time:- event timestamp
+#### activity_time:- total time a user was active
+
+Apart from generating the above columns the app also perform below tasks
+
+- Partitions that data in yr,mm and dd columns
+- Writes the data to sink in parquet format
+
+By using the user_id and activity_time column below metrics are calculated
+- Total time spent by a user in a day
+- Total time spent by a user in a month
+
+**Reference URL** : 
+- https://medium.com/hackernoon/how-to-log-in-apache-spark-f4204fad78a
+- https://howtodoinjava.com/log4j/how-to-configure-log4j-using-properties-file/
+- https://stackoverflow.com/questions/2288876/how-to-configure-log4j-with-a-properties-file
+- https://stackoverflow.com/questions/54662219/spark-advanced-window-with-dynamic-last
+- https://youtu.be/9hOsekPDViw
+- https://youtu.be/2jbTVeITtLk
