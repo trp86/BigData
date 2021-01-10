@@ -6,7 +6,7 @@
 
     <groupId>com.selfhelp</groupId>
     <artifactId>app-ts-generate-sessionid</artifactId>
-    <version>1.0.0-wip</version>
+    <version>1.0.0</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
