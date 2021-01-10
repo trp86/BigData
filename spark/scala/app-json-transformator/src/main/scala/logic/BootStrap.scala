@@ -50,12 +50,25 @@ object BootStrap extends App{
 val anonym = new Anonym()
 
 
-  rdd.mapPartitions( anonym) .foreach(println(_))
+ // rdd.mapPartitions( new some().anon(_)).foreach(println(_))
 
+  rdd.mapPartitions(new Anonym()).foreach(println(_))
 
-  def anon(x:Iterator[String]):Iterator[String]={
-    x.map(x => "WORKING" )
+class some ()
+  {
+    val g = "work"
+    def anon(x:Iterator[String]):Iterator[String]={
+      x.map(x => g)
+    }
   }
+
+
+
+  /*def anon(x:Iterator[String]):Iterator[String]={
+
+
+    x.map(x => new some())
+  }*/
 
 
   //First Approach
