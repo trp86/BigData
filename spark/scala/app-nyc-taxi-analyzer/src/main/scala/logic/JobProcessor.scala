@@ -1,9 +1,9 @@
 package logic
 
-import logic.ReusableFunctions._
 import JobConfiguration._
+import commons.ReusableFunctions
 
-object JobProcessor extends SparkConfigs {
+object JobProcessor extends ReusableFunctions {
 
   def process(): Unit = {
 
@@ -33,8 +33,6 @@ object JobProcessor extends SparkConfigs {
     val dfWithTypecastedColumns = typecastColumns(successDFDateTimeColumnCheck, tripDataColumns)
 
 
-
-    println(tripDataDQcolumnsOrValueCompare)
     val (successDFwithPassengerCountCheck, errorDFwithPassengerCountCheck) = dataframeColumnsCompare(dfWithTypecastedColumns, tripDataDQcolumnsOrValueCompare)
 
     successDFwithPassengerCountCheck.show()

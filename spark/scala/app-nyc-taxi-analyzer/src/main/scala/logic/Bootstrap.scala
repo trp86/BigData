@@ -1,5 +1,6 @@
 package logic
 
+import commons.SparkConfigs
 import org.apache.log4j.{Logger, PropertyConfigurator}
 
 object Bootstrap extends App with SparkConfigs {

@@ -1,8 +1,6 @@
 package logic
 
-import logic.JobConfiguration.config
 import org.apache.log4j.{Logger, PropertyConfigurator}
-
 import java.util.Properties
 
 class JobConfiguration (propertiesFile: String){

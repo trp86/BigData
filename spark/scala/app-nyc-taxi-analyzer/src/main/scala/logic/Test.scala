@@ -1,10 +1,12 @@
 package logic
 
+import commons.SparkConfigs
+
 import java.util.Properties
 import org.apache.log4j.PropertyConfigurator
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.functions.{col, expr, lit}
-import logic.ReusableFunctions.{sparkSession, _}
+import commons.ReusableFunctions
 
 
 object Test extends App with SparkConfigs {

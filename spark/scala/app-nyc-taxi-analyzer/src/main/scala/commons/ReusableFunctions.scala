@@ -1,15 +1,14 @@
-package logic
+package commons
 
-
-import org.apache.spark.sql.{DataFrame, Row}
-import org.apache.spark.sql.functions.{col, expr, lit, to_timestamp}
-import JobConfiguration._
+import logic.JobConfiguration.dateTimeFormat
 import org.apache.log4j.Logger
+import org.apache.spark.sql.functions.{col, expr, lit, to_timestamp}
 import org.apache.spark.sql.types.{DoubleType, IntegerType, TimestampType}
+import org.apache.spark.sql.{DataFrame, Row}
 
-object ReusableFunctions extends SparkConfigs {
+trait ReusableFunctions extends SparkConfigs {
 
-  val log = Logger.getLogger(ReusableFunctions.getClass)
+  val log = Logger.getLogger("ReusableFunctions")
 
   /**
    *
