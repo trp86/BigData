@@ -1,6 +1,8 @@
 package logic
 
+import logic.JobConfiguration.config
 import org.apache.log4j.{Logger, PropertyConfigurator}
+
 import java.util.Properties
 
 class JobConfiguration (propertiesFile: String){
@@ -30,8 +32,13 @@ object JobConfiguration {
 
 
   val tripDataDQcolumnsOrValueCompare = config.properties.getProperty("trip.data.dq.columnsorvalue.compare").split("""\|""").toList
+
   val inputPathWeatherData = config.properties.getProperty("weather.data.input.path")
   val weatherDataExpectedHeader = config.properties.getProperty("weather.data.expected.header").split(""",""").toList
+  val weatherDataColumns: List[(String, String)] = config.properties.getProperty("weather.data.columns").split(""",""").map(x => {
+    val y = x.split(""":""")
+    (y(0), y(1))
+  }).toList
 
   val processedData: String = config.properties.getProperty("processed.data.path")
 

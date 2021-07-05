@@ -1,9 +1,11 @@
 package logic
 
 import JobConfiguration._
-import commons.{TripDataReusableFunctions}
+import commons.TripDataReusableFunctions._
+import commons.WeatherDataReusableFunctions.replaceTwithNegligibleValues
 
-object JobProcessor extends TripDataReusableFunctions {
+
+object JobProcessor  {
 
   def process(): Unit = {
 
@@ -11,7 +13,7 @@ object JobProcessor extends TripDataReusableFunctions {
     val dfTrip = createDataFrameFromCsvFiles(inputPathTripData)
 
     // Create dataframe for weather data
-    val dfWeather = createDataFrameFromCsvFiles(inputPathWeatherData)
+    val dfWeather = createDataFrameFromCsvFiles(inputPathWeatherData).withColumnRenamed("date", "weather_date")
 
     // Check Header for trip data
     // TODO if header mismatch move the file to rejected location
@@ -23,16 +25,23 @@ object JobProcessor extends TripDataReusableFunctions {
     val dfWeatherHeaderActualColumns = dfWeather.columns.toList
     val isWeatherDataHeaderMatch = isHeaderMatch(weatherDataExpectedHeader, dfWeatherHeaderActualColumns)
 
-    val (dfTripSuccess, dfTripError) = performDataQualityAndAddAdditionalColumns(dfTrip)
+    /* val (dfTripSuccess, dfTripError) = performDataQualityAndAddAdditionalColumns(dfTrip)
 
     println(dfTripSuccess.count)
     println(dfTripError.count)
 
     dfTripSuccess.show()
     dfTripError.show()
+*/
+
+    dfWeather.printSchema()
+
+    val x = replaceTwithNegligibleValues(dfWeather, weatherDataColumns)
 
 
-
+    val y = typecastColumns(x, weatherDataColumns)
+    y.show(400)
+    y.printSchema()
 
   return Unit
   }

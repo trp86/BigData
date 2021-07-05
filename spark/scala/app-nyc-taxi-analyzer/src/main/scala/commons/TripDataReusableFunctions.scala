@@ -7,7 +7,7 @@ import logic.JobConfiguration._
 
 import scala.util.{Failure, Success, Try}
 
-trait TripDataReusableFunctions extends ReusableFunctions {
+object TripDataReusableFunctions extends ReusableFunctions {
 
   override val log = Logger.getLogger("TripDataReusableFunctions")
 

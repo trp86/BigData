@@ -3,7 +3,7 @@ package commons
 import logic.JobConfiguration.dateTimeFormat
 import org.apache.log4j.Logger
 import org.apache.spark.sql.functions.{col, expr, lit, to_timestamp}
-import org.apache.spark.sql.types.{DoubleType, IntegerType, TimestampType}
+import org.apache.spark.sql.types.{DateType, DoubleType, IntegerType, TimestampType}
 import org.apache.spark.sql.{DataFrame, Row}
 
 trait ReusableFunctions extends SparkConfigs {
@@ -42,6 +42,7 @@ trait ReusableFunctions extends SparkConfigs {
         case "int" => df.withColumn(colName, df(colName).cast(IntegerType))
         case "double" => df.withColumn(colName, df(colName).cast(DoubleType))
         case "datetime" => df.withColumn(colName, df(colName).cast(TimestampType))
+        case "date" => df.withColumn(colName, df(colName).cast(DateType))
         case _ => df
       }
     })
