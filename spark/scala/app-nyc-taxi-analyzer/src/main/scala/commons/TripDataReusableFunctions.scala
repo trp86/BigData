@@ -11,7 +11,11 @@ trait TripDataReusableFunctions extends ReusableFunctions {
 
   override val log = Logger.getLogger("TripDataReusableFunctions")
 
-
+  /**
+   *
+   * @param inputDF
+   * @return
+   */
   def performDataQualityAndAddAdditionalColumns(inputDF: DataFrame): (DataFrame, DataFrame) = {
 
     // Data Quality check for trip data (Columns should not have negative value)
