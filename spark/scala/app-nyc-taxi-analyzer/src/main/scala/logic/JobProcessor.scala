@@ -29,11 +29,18 @@ object JobProcessor extends SparkConfigs {
     // Data Quality check for trip data (Columns should have proper datetime format)
     val (successDFDateTimeColumnCheck, errorDFDateTimeColumnCheck) = filterRecordsHavingImproperDateTimeValue(successDFNegativeValueCheck, tripDataDQdateTimeStampFormatCheckColumns)
 
+    // Assign data types to columns
+    val dfWithTypecastedColumns = typecastColumns(successDFDateTimeColumnCheck, tripDataColumns)
 
-    successDFDateTimeColumnCheck.show()
-    println(successDFDateTimeColumnCheck.count)
 
-    val errorDF = errorDFNegativeValueCheck.union(errorDFDateTimeColumnCheck)
+
+    println(tripDataDQcolumnsOrValueCompare)
+    val (successDFwithPassengerCountCheck, errorDFwithPassengerCountCheck) = dataframeColumnsCompare(dfWithTypecastedColumns, tripDataDQcolumnsOrValueCompare)
+
+    successDFwithPassengerCountCheck.show()
+    println(successDFwithPassengerCountCheck.count)
+
+    val errorDF = errorDFNegativeValueCheck.union(errorDFDateTimeColumnCheck).union(errorDFwithPassengerCountCheck)
     println(errorDF.count)
     errorDF.show(truncate = false)
 

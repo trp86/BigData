@@ -12,9 +12,14 @@ object Test extends App with SparkConfigs {
  // print("Hello")
 
   // create DataFrame from scala Seq. It can infer schema for you.
-  // val df1 = sparkSession.createDataFrame(Seq((-1, "andy", 20, "USA"), (2, "jeff", 23, "China"), (3, "james", -18, "USA"))).toDF("id", "name", "age", "country")
+   val df1 = sparkSession.createDataFrame(Seq((-1, "andy", 20, "USA"), (2, "jeff", 23, "China"), (3, "james", -18, "USA"))).toDF("id", "name", "age", "country")
   // df1.printSchema
   // df1.show()
+
+  // val (sdf, edf) = dataframeColumnsCompare(df1, List("id", "age"), ">")
+
+ // sdf.show()
+ // edf.show()
 
   // val columnNames = List("id", "age")
 
@@ -35,10 +40,10 @@ object Test extends App with SparkConfigs {
   // dfDate.withColumn("datetype_timestamp", to_timestamp(col("input_timestamp"), "yyyy-MM-dd HH:mm:ss")).show(false)
 
 
-  val (sdf, edf) = filterRecordsHavingImproperDateTimeValue (dfDate, List("input_timestamp"))
+  // val (sdf, edf) = filterRecordsHavingImproperDateTimeValue (dfDate, List("input_timestamp"))
 
-  sdf.show()
-   edf.show()
+  // sdf.show()
+  // edf.show()
 
   // df1.filter(!(col("id") < 0)).show
 
