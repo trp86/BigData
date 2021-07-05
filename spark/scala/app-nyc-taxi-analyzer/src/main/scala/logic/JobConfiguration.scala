@@ -34,4 +34,12 @@ object JobConfiguration {
   val weatherDataExpectedHeader = config.properties.getProperty("weather.data.expected.header").split(""",""").toList
 
   val processedData: String = config.properties.getProperty("processed.data.path")
+
+
+  // Column names
+  val COL_NAME_TRIP_DATE = "trip_date"
+  val COL_NAME_TRIP_HOUR = "trip_hour"
+  val COL_NAME_TRIP_DAY_OF_WEEK = "trip_day_of_week"
+  val COL_NAME_PICKUP_DATETIME = "pickup_datetime"
+
 }

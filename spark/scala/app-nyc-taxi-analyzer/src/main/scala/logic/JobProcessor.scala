@@ -1,9 +1,9 @@
 package logic
 
 import JobConfiguration._
-import commons.ReusableFunctions
+import commons.{TripDataReusableFunctions}
 
-object JobProcessor extends ReusableFunctions {
+object JobProcessor extends TripDataReusableFunctions {
 
   def process(): Unit = {
 
@@ -23,24 +23,14 @@ object JobProcessor extends ReusableFunctions {
     val dfWeatherHeaderActualColumns = dfWeather.columns.toList
     val isWeatherDataHeaderMatch = isHeaderMatch(weatherDataExpectedHeader, dfWeatherHeaderActualColumns)
 
-    // Data Quality check for trip data (Columns should not have negative value)
-    val (successDFNegativeValueCheck, errorDFNegativeValueCheck) = filterRecordsHavingNegativeValue(dfTrip, tripDataDQnegativeValueCheckColumns)
+    val (dfTripSuccess, dfTripError) = performDataQualityAndAddAdditionalColumns(dfTrip)
 
-    // Data Quality check for trip data (Columns should have proper datetime format)
-    val (successDFDateTimeColumnCheck, errorDFDateTimeColumnCheck) = filterRecordsHavingImproperDateTimeValue(successDFNegativeValueCheck, tripDataDQdateTimeStampFormatCheckColumns)
+    println(dfTripSuccess.count)
+    println(dfTripError.count)
 
-    // Assign data types to columns
-    val dfWithTypecastedColumns = typecastColumns(successDFDateTimeColumnCheck, tripDataColumns)
+    dfTripSuccess.show()
+    dfTripError.show()
 
-
-    val (successDFwithPassengerCountCheck, errorDFwithPassengerCountCheck) = dataframeColumnsCompare(dfWithTypecastedColumns, tripDataDQcolumnsOrValueCompare)
-
-    successDFwithPassengerCountCheck.show()
-    println(successDFwithPassengerCountCheck.count)
-
-    val errorDF = errorDFNegativeValueCheck.union(errorDFDateTimeColumnCheck).union(errorDFwithPassengerCountCheck)
-    println(errorDF.count)
-    errorDF.show(truncate = false)
 
 
 
