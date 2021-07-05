@@ -1,7 +1,6 @@
 package logic
 
 import org.apache.log4j.{Logger, PropertyConfigurator}
-import org.apache.spark.sql.SparkSession
 
 object Bootstrap extends App with SparkConfigs {
 

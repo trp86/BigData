@@ -17,10 +17,12 @@ class JobConfiguration (propertiesFile: String){
 
 object JobConfiguration {
   val config = new JobConfiguration("""/conf/app-nyc-taxi-analyzer.properties""")
+  val dateTimeFormat = config.properties.getProperty("data.datetime.format")
 
   val inputPathTripData = config.properties.getProperty("trip.data.input.path")
   val tripDataExpectedHeader = config.properties.getProperty("trip.data.expected.header").split(""",""").toList
   val tripDataDQnegativeValueCheckColumns = config.properties.getProperty("trip.data.dq.negativevaluecheck.columns").split(""",""").toList
+  val tripDataDQdateTimeStampFormatCheckColumns = config.properties.getProperty("trip.data.dq.datetimestampformatcheck.columns").split(""",""").toList
 
   val inputPathWeatherData = config.properties.getProperty("weather.data.input.path")
   val weatherDataExpectedHeader = config.properties.getProperty("weather.data.expected.header").split(""",""").toList
