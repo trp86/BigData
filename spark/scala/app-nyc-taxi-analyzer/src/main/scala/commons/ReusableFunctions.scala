@@ -2,8 +2,8 @@ package commons
 
 import logic.JobConfiguration.dateTimeFormat
 import org.apache.log4j.Logger
-import org.apache.spark.sql.functions.{col, expr, lit, to_timestamp}
-import org.apache.spark.sql.types.{DateType, DoubleType, IntegerType, TimestampType}
+import org.apache.spark.sql.functions.{col, expr, lit, to_date, to_timestamp}
+import org.apache.spark.sql.types.{DateType, DecimalType, DoubleType, IntegerType, TimestampType}
 import org.apache.spark.sql.{DataFrame, Row}
 
 trait ReusableFunctions extends SparkConfigs {
@@ -35,14 +35,15 @@ trait ReusableFunctions extends SparkConfigs {
    * @param columnDetails
    * @return Dataframe with typecasted columns
    */
-  def typecastColumns (inputDF: DataFrame, columnDetails: List[(String, String)]): DataFrame = {
+  def typecastColumns (inputDF: DataFrame, columnDetails: List[(String, String, String)]): DataFrame = {
     columnDetails.foldLeft(inputDF) ((df, colDetail) => {
-      val (colName, colDataType) = (colDetail._1, colDetail._2)
+      val (colName, colDataType, otherDetails) = (colDetail._1, colDetail._2, colDetail._3)
       colDataType match {
         case "int" => df.withColumn(colName, df(colName).cast(IntegerType))
         case "double" => df.withColumn(colName, df(colName).cast(DoubleType))
+        case "decimal" => df.withColumn(colName, df(colName).cast(colDataType + otherDetails))
         case "datetime" => df.withColumn(colName, df(colName).cast(TimestampType))
-        case "date" => df.withColumn(colName, df(colName).cast(DateType))
+        case "date" => df.withColumn(colName, to_date(col(colName), otherDetails))
         case _ => df
       }
     })
@@ -175,5 +176,9 @@ trait ReusableFunctions extends SparkConfigs {
     (successDF, errorDF)
 
   }
+
+
+  // TODO create a method to rename the columns of a dataframe. use fold left
+  // def renameDataFrameColumn(inputDF: DataFrame, colDetails)
 
 }

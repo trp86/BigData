@@ -2,7 +2,7 @@ package logic
 
 import JobConfiguration._
 import commons.TripDataReusableFunctions._
-import commons.WeatherDataReusableFunctions.replaceTwithNegligibleValues
+import commons.{TripDataReusableFunctions, WeatherDataReusableFunctions}
 
 
 object JobProcessor  {
@@ -25,25 +25,24 @@ object JobProcessor  {
     val dfWeatherHeaderActualColumns = dfWeather.columns.toList
     val isWeatherDataHeaderMatch = isHeaderMatch(weatherDataExpectedHeader, dfWeatherHeaderActualColumns)
 
-    /* val (dfTripSuccess, dfTripError) = performDataQualityAndAddAdditionalColumns(dfTrip)
+     val (dfTripSuccess, dfTripError) = TripDataReusableFunctions.performDQandAddColumns(dfTrip)
 
     println(dfTripSuccess.count)
     println(dfTripError.count)
 
     dfTripSuccess.show()
     dfTripError.show()
-*/
 
-    dfWeather.printSchema()
+    val (dfWeatherSuccess, dfWeatherError) = WeatherDataReusableFunctions.performDQandAddColumns(dfWeather)
 
-    val x = replaceTwithNegligibleValues(dfWeather, weatherDataColumns)
+    println(dfWeatherSuccess.count)
+    println(dfWeatherError.count)
+
+    dfWeatherSuccess.show()
+    dfWeatherError.show()
 
 
-    val y = typecastColumns(x, weatherDataColumns)
-    y.show(400)
-    y.printSchema()
-
-  return Unit
+    return Unit
   }
 
 }

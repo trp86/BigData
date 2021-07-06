@@ -16,7 +16,7 @@ object TripDataReusableFunctions extends ReusableFunctions {
    * @param inputDF
    * @return
    */
-  def performDataQualityAndAddAdditionalColumns(inputDF: DataFrame): (DataFrame, DataFrame) = {
+  def performDQandAddColumns(inputDF: DataFrame): (DataFrame, DataFrame) = {
 
     // Data Quality check for trip data (Columns should not have negative value)
     val (successDFNegativeValueCheck, errorDFNegativeValueCheck) = filterRecordsHavingNegativeValue(inputDF, tripDataDQnegativeValueCheckColumns)
@@ -28,13 +28,13 @@ object TripDataReusableFunctions extends ReusableFunctions {
     val dfWithTypecastedColumns = typecastColumns(successDFDateTimeColumnCheck, tripDataColumns)
 
     // Data Quality check for columns to be comapred with certain value or any column in dataframe
-    val (successDFwithPassengerCountCheck, errorDFwithPassengerCountCheck) = dataframeColumnsCompare(dfWithTypecastedColumns, tripDataDQcolumnsOrValueCompare)
+    val (successDFwithColumnsOrValueCompare, errorDFwithColumnsOrValueCompare) = dataframeColumnsCompare(dfWithTypecastedColumns, tripDataDQcolumnsOrValueCompare)
 
     // Add trip_date column
-    val dfWithAdditionalColumns = addAdditionalColumns(successDFwithPassengerCountCheck)
+    val dfWithAdditionalColumns = addAdditionalColumns(successDFwithColumnsOrValueCompare)
 
     // Create error dataframe
-    val errorDF = errorDFNegativeValueCheck.union(errorDFDateTimeColumnCheck).union(errorDFwithPassengerCountCheck)
+    val errorDF = errorDFNegativeValueCheck.union(errorDFDateTimeColumnCheck).union(errorDFwithColumnsOrValueCompare)
 
     (dfWithAdditionalColumns, errorDF)
 

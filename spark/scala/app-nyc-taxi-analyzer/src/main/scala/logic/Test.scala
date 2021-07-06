@@ -5,8 +5,9 @@ import commons.SparkConfigs
 import java.util.Properties
 import org.apache.log4j.PropertyConfigurator
 import org.apache.spark.sql.Row
-import org.apache.spark.sql.functions.{col, expr, lit}
+import org.apache.spark.sql.functions.{col, expr, lit, to_date}
 import commons.ReusableFunctions
+import org.apache.spark.sql.types.DateType
 
 
 object Test extends App with SparkConfigs {
@@ -15,8 +16,14 @@ object Test extends App with SparkConfigs {
 
   // create DataFrame from scala Seq. It can infer schema for you.
    val df1 = sparkSession.createDataFrame(Seq((-1, "andy", 20, "USA"), (2, "jeff", 23, "China"), (3, "james", -18, "USA"))).toDF("id", "name", "age", "country")
-  // df1.printSchema
-  // df1.show()
+
+  val df2 = sparkSession.createDataFrame(Seq(("0.0001", "1-1-2014"), ("0.0001", "28-2-2014"))).toDF("x", "y")
+    .withColumn("x", col("x").cast("decimal(14,4)"))
+    .withColumn("y", to_date(col("y"), "dd-MM-yyyy"))
+  df2.printSchema
+   df2.show()
+
+  // to_date(col(y), "MM/dd/yyyy")
 
   // val (sdf, edf) = dataframeColumnsCompare(df1, List("id", "age"), ">")
 
