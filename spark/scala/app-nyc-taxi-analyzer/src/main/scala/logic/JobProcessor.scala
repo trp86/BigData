@@ -27,7 +27,7 @@ object JobProcessor  {
 
      val (dfTripSuccess, dfTripError) = TripDataReusableFunctions.performDQandAddColumns(dfTrip)
 
-    println(dfTripSuccess.count)
+    /* println(dfTripSuccess.count)
     println(dfTripError.count)
 
     dfTripSuccess.show()
@@ -40,6 +40,21 @@ object JobProcessor  {
 
     dfWeatherSuccess.show()
     dfWeatherError.show()
+*/
+
+    val (dfWeatherSuccess, dfWeatherError) = WeatherDataReusableFunctions.performDQandAddColumns(dfWeather)
+    // Join dfTripSuccess and dfWeatherSuccess
+    val df1 = dfTripSuccess.join(dfWeatherSuccess, dfTripSuccess("trip_date") === dfWeatherSuccess("weather_date"), "inner")
+
+    // println (df1.count)
+
+     // df1.show(false)
+
+    df1.write.option("header", true).csv("src/main/resources/inputdata/nyccitytaxi/out/")
+
+
+
+
 
 
     return Unit
