@@ -1,5 +1,6 @@
 package commons
 
+import org.apache.spark.SparkContext
 import org.apache.spark.sql.SparkSession
 
 trait SparkConfigs {
@@ -13,5 +14,6 @@ trait SparkConfigs {
 
   // Spark Context
   val sparkContext = sparkSession.sparkContext
+
 
 }

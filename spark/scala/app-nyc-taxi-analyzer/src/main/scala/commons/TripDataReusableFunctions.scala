@@ -1,15 +1,18 @@
 package commons
 
 import org.apache.log4j.Logger
-import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.spark.sql.functions.{col, dayofweek, hour, to_date}
 import logic.JobConfiguration._
 
 import scala.util.{Failure, Success, Try}
 
-object TripDataReusableFunctions extends ReusableFunctions {
 
-  override val log = Logger.getLogger("TripDataReusableFunctions")
+class TripDataReusableFunctions (val sparkSession: SparkSession)   {
+
+   val log = Logger.getLogger("TripDataReusableFunctions")
+   val reusableFunctions = new ReusableFunctions(sparkSession)
+  // import reusableFunctions._
 
   /**
    *
@@ -19,16 +22,16 @@ object TripDataReusableFunctions extends ReusableFunctions {
   def performDQandAddColumns(inputDF: DataFrame): (DataFrame, DataFrame) = {
 
     // Data Quality check for trip data (Columns should not have negative value)
-    val (successDFNegativeValueCheck, errorDFNegativeValueCheck) = filterRecordsHavingNegativeValue(inputDF, tripDataDQnegativeValueCheckColumns)
+    val (successDFNegativeValueCheck, errorDFNegativeValueCheck) = reusableFunctions.filterRecordsHavingNegativeValue(inputDF, tripDataDQnegativeValueCheckColumns)
 
     // Data Quality check for trip data (Columns should have proper datetime format)
-    val (successDFDateTimeColumnCheck, errorDFDateTimeColumnCheck) = filterRecordsHavingImproperDateTimeValue(successDFNegativeValueCheck, tripDataDQdateTimeStampFormatCheckColumns)
+    val (successDFDateTimeColumnCheck, errorDFDateTimeColumnCheck) = reusableFunctions.filterRecordsHavingImproperDateTimeValue(successDFNegativeValueCheck, tripDataDQdateTimeStampFormatCheckColumns)
 
     // Assign data types to columns
-    val dfWithTypecastedColumns = typecastColumns(successDFDateTimeColumnCheck, tripDataColumns)
+    val dfWithTypecastedColumns = reusableFunctions.typecastColumns(successDFDateTimeColumnCheck, tripDataColumns)
 
     // Data Quality check for columns to be comapred with certain value or any column in dataframe
-    val (successDFwithColumnsOrValueCompare, errorDFwithColumnsOrValueCompare) = dataframeColumnsCompare(dfWithTypecastedColumns, tripDataDQcolumnsOrValueCompare)
+    val (successDFwithColumnsOrValueCompare, errorDFwithColumnsOrValueCompare) = reusableFunctions.dataframeColumnsCompare(dfWithTypecastedColumns, tripDataDQcolumnsOrValueCompare)
 
     // Add trip_date column
     val dfWithAdditionalColumns = addAdditionalColumns(successDFwithColumnsOrValueCompare)

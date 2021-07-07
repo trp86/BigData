@@ -2,12 +2,14 @@ package commons
 
 import logic.JobConfiguration._
 import org.apache.log4j.Logger
-import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.spark.sql.functions.{col, when}
 
-object WeatherDataReusableFunctions extends ReusableFunctions {
+class WeatherDataReusableFunctions  (val sparkSession: SparkSession){
 
-  override val log = Logger.getLogger("WeatherDataReusableFunctions")
+  val log = Logger.getLogger("WeatherDataReusableFunctions")
+  val reusableFunctions = new ReusableFunctions(sparkSession)
+  // import reusableFunctions._
 
   /**
    *
@@ -20,13 +22,13 @@ object WeatherDataReusableFunctions extends ReusableFunctions {
     val dfwithReplacedTvalues = replaceTwithNegligibleValues(inputDF, weatherDataColumns)
 
     // Typecast the dataframe columns
-    val dfWithColumnsTypeCast = typecastColumns(dfwithReplacedTvalues, weatherDataColumns)
+    val dfWithColumnsTypeCast = reusableFunctions.typecastColumns(dfwithReplacedTvalues, weatherDataColumns)
 
     // Data Quality check for trip data (Columns should not have negative value)
-    val (successDFNegativeValueCheck, errorDFNegativeValueCheck) = filterRecordsHavingNegativeValue(dfWithColumnsTypeCast, weatherDataDQnegativeValueCheckColumns)
+    val (successDFNegativeValueCheck, errorDFNegativeValueCheck) = reusableFunctions.filterRecordsHavingNegativeValue(dfWithColumnsTypeCast, weatherDataDQnegativeValueCheckColumns)
 
     // Data Quality check for columns to be comapred with certain value or any column in dataframe
-    val (successDFwithColumnsOrValueCompare, errorDFwithColumnsOrValueCompare) = dataframeColumnsCompare(successDFNegativeValueCheck, weatherDataDQcolumnsOrValueCompare)
+    val (successDFwithColumnsOrValueCompare, errorDFwithColumnsOrValueCompare) = reusableFunctions.dataframeColumnsCompare(successDFNegativeValueCheck, weatherDataDQcolumnsOrValueCompare)
 
     // Add additional columns
     val dfWithAdditionalColumns = addAdditionalColumns(successDFwithColumnsOrValueCompare)

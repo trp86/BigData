@@ -3,10 +3,12 @@ package commons
 import logic.JobConfiguration.dateTimeFormat
 import org.apache.log4j.Logger
 import org.apache.spark.sql.functions.{col, expr, lit, to_date, to_timestamp}
-import org.apache.spark.sql.types.{DateType, DecimalType, DoubleType, IntegerType, TimestampType}
-import org.apache.spark.sql.{DataFrame, Row}
+import org.apache.spark.sql.types.{DoubleType, IntegerType, TimestampType}
+import org.apache.spark.sql.{DataFrame, Row, SparkSession}
 
-trait ReusableFunctions extends SparkConfigs {
+import scala.util.{Failure, Success, Try}
+
+class ReusableFunctions (val sparkSession: SparkSession)  {
 
   val log = Logger.getLogger("ReusableFunctions")
 
@@ -16,7 +18,19 @@ trait ReusableFunctions extends SparkConfigs {
    * @return Dataframe
    */
   def createDataFrameFromCsvFiles(path: String): DataFrame = {
-    sparkSession.read.format("csv").option("header", true).option("delimiter", ",").load(path)
+    Try(sparkSession.read.format("csv").option("header", true).option("delimiter", ",").load(path)) match {
+      case Success(df) => df
+      case Failure(exception) => {
+        if (sparkSession == null) {
+          log.error ("Spark Session object is null.")
+          throw new Exception("Spark Session object is null.")
+        }
+        else {
+          throw exception
+        }
+
+      }
+    }
   }
 
   /**
