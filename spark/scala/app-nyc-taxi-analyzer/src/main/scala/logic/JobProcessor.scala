@@ -37,7 +37,7 @@ object JobProcessor  {
     val isWeatherDataHeaderMatch = reusableFunctions.isHeaderMatch(weatherDataExpectedHeader, dfWeatherHeaderActualColumns)
 
      val (dfTripSuccess, dfTripError) = tripDataReusableFunctions.performDQandAddColumns(dfTrip)
-
+    dfTripError.show()
     /* println(dfTripSuccess.count)
     println(dfTripError.count)
 

@@ -3,9 +3,10 @@ package commons
 import logic.JobConfiguration.dateTimeFormat
 import org.apache.log4j.Logger
 import org.apache.spark.sql.functions.{col, expr, lit, to_date, to_timestamp}
-import org.apache.spark.sql.types.{DoubleType, IntegerType, TimestampType}
+import org.apache.spark.sql.types.{DoubleType, IntegerType, StringType, TimestampType}
 import org.apache.spark.sql.{DataFrame, Row, SparkSession}
 
+import java.io
 import scala.util.{Failure, Success, Try}
 
 class ReusableFunctions (val sparkSession: SparkSession)  {
@@ -50,7 +51,7 @@ class ReusableFunctions (val sparkSession: SparkSession)  {
    * @return Dataframe with typecasted columns
    */
   def typecastColumns (inputDF: DataFrame, columnDetails: List[(String, String, String)]): DataFrame = {
-    columnDetails.foldLeft(inputDF) ((df, colDetail) => {
+    Try (columnDetails.foldLeft(inputDF) ((df, colDetail) => {
       val (colName, colDataType, otherDetails) = (colDetail._1, colDetail._2, colDetail._3)
       colDataType match {
         case "int" => df.withColumn(colName, df(colName).cast(IntegerType))
@@ -58,9 +59,16 @@ class ReusableFunctions (val sparkSession: SparkSession)  {
         case "decimal" => df.withColumn(colName, df(colName).cast(colDataType + otherDetails))
         case "datetime" => df.withColumn(colName, df(colName).cast(TimestampType))
         case "date" => df.withColumn(colName, to_date(col(colName), otherDetails))
-        case _ => df
+        case "string" => df.withColumn(colName, df(colName).cast(StringType))
+        case _ => throw new Exception ("Unsupported data type for typecasting " + colDataType)
       }
-    })
+    })) match {
+      case Success(df) => df
+      case Failure(exception) => {
+            log.error(exception.getMessage)
+            throw exception
+          }
+        }
   }
 
 
@@ -71,6 +79,9 @@ class ReusableFunctions (val sparkSession: SparkSession)  {
    * @return Success Dataframe , Error Dataframe
    */
   def filterRecordsHavingNegativeValue(inputDF: DataFrame, columnNames: List[String]): (DataFrame, DataFrame) = {
+
+    // Check if column exists in dataframe. If not present then throw exception
+    checkIfColumnsExistInDataFrame(inputDF, columnNames)
 
     // Create empty dataframe with schema present in input dataframe along with additional column rejectReason
     val emptyDF = sparkSession.createDataFrame(sparkSession.sparkContext.emptyRDD[Row], inputDF.schema).withColumn("rejectReason", lit(""))
@@ -100,6 +111,9 @@ class ReusableFunctions (val sparkSession: SparkSession)  {
    */
   def filterRecordsHavingImproperDateTimeValue(inputDF: DataFrame, columnNames: List[String]): (DataFrame, DataFrame) = {
 
+    // Check if column exists in dataframe. If not present then throw exception
+    checkIfColumnsExistInDataFrame(inputDF, columnNames)
+
     // Create empty dataframe with schema present in input dataframe along with additional column rejectReason
     val emptyDF = sparkSession.createDataFrame(sparkSession.sparkContext.emptyRDD[Row], inputDF.schema).withColumn("rejectReason", lit(""))
 
@@ -117,7 +131,7 @@ class ReusableFunctions (val sparkSession: SparkSession)  {
       val dfWithDateTimeTypeCasted = inputDF.withColumn("timestamp_typecasted", to_timestamp(col(colName), dateTimeFormat))
       // Only records "timestamp_typecasted" is null should be considered as error records
       df.union(
-        dfWithDateTimeTypeCasted.filter(col("timestamp_typecasted").isNull).drop(col("timestamp_typecasted")).withColumn("rejectReason", lit(colName + " datetime format is incorrect"))
+         dfWithDateTimeTypeCasted.filter(col("timestamp_typecasted").isNull).drop(col("timestamp_typecasted")).withColumn("rejectReason", lit(colName + " datetime format is incorrect"))
       )
     })
 
@@ -138,6 +152,15 @@ class ReusableFunctions (val sparkSession: SparkSession)  {
     val successDF = compareExpressions.foldLeft(inputDF) ((df, compareExpression) => {
       val exprSequence = compareExpression.split(""" """).toSeq
       val (colName, compareOperator, valueOrColTobeCompared) = (exprSequence (0).trim, exprSequence (1).trim, exprSequence (2).trim)
+
+      // Check if column exists in dataframe. If not present then throw exception
+      checkIfColumnsExistInDataFrame(inputDF, List(colName))
+
+      Try(valueOrColTobeCompared.toInt) match {
+        case Success(value) => value // Some value to be compared Do Nothing
+        case Failure(exception) => checkIfColumnsExistInDataFrame(inputDF, List(valueOrColTobeCompared)) // Some column for comparison. check if exists in dataframe
+      }
+
       val colDataType = df.schema(colName).dataType.typeName
 
       // For String datatypes compare operator can be only (=, !=)
@@ -194,5 +217,33 @@ class ReusableFunctions (val sparkSession: SparkSession)  {
 
   // TODO create a method to rename the columns of a dataframe. use fold left
   // def renameDataFrameColumn(inputDF: DataFrame, colDetails)
+
+  /**
+   *
+   * @param inputDF
+   * @param columnList
+   * @return Unit
+   */
+  def checkIfColumnsExistInDataFrame(inputDF: DataFrame, columnList: List[String]): Unit = {
+    val columnsPresentInDf = inputDF.columns.toList
+    val columnsNotPresentInDf = columnList.filter(x => !columnsPresentInDf.contains(x))
+    if (columnsNotPresentInDf.size > 0) {
+      throw new Exception (columnsNotPresentInDf.mkString(",") + " not present in dataframe.")
+    }
+  }
+
+  /**
+   *
+   * @param inputDF
+   * @param columnName
+   * @return Unit
+   */
+  // TODO not to be used
+  def checkIfColumnExistInDataFrame(inputDF: DataFrame, columnName: String): Unit = {
+    val columnsPresentInDf = inputDF.columns.toList
+    if (!columnsPresentInDf.contains(columnName)) {
+      throw new Exception (columnName + " not present in dataframe.")
+    }
+  }
 
 }
