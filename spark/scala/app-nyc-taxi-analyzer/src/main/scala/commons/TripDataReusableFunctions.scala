@@ -12,7 +12,6 @@ class TripDataReusableFunctions (val sparkSession: SparkSession)   {
 
    val log = Logger.getLogger("TripDataReusableFunctions")
    val reusableFunctions = new ReusableFunctions(sparkSession)
-  // import reusableFunctions._
 
   /**
    *
@@ -50,6 +49,9 @@ class TripDataReusableFunctions (val sparkSession: SparkSession)   {
    * @return DataFrame
    */
   private def addTripDateColumn(inputDF: DataFrame): DataFrame = {
+
+    // Check if column pickup_datetime exists in dataframe
+    reusableFunctions.checkIfColumnsExistInDataFrame(inputDF, List (COL_NAME_PICKUP_DATETIME))
     Try(inputDF.withColumn(COL_NAME_TRIP_DATE, to_date(col(COL_NAME_PICKUP_DATETIME), "MM/dd/yyyy"))) match
       {
       case Success(df) => df
@@ -66,6 +68,9 @@ class TripDataReusableFunctions (val sparkSession: SparkSession)   {
    * @return DataFrame
    */
   private def addTripHourOfDayColumn(inputDF: DataFrame): DataFrame = {
+
+    // Check if column pickup_datetime exists in dataframe
+    reusableFunctions.checkIfColumnsExistInDataFrame(inputDF, List (COL_NAME_PICKUP_DATETIME))
     Try(inputDF.withColumn(COL_NAME_TRIP_HOUR, hour(col(COL_NAME_PICKUP_DATETIME)))) match
     {
       case Success(df) => df
@@ -83,6 +88,10 @@ class TripDataReusableFunctions (val sparkSession: SparkSession)   {
    * @return DataFrame
    */
   private def addTripDayOfWeekColumn(inputDF: DataFrame): DataFrame = {
+
+    // Check if column pickup_datetime exists in dataframe
+    reusableFunctions.checkIfColumnsExistInDataFrame(inputDF, List (COL_NAME_PICKUP_DATETIME))
+
     Try(inputDF.withColumn(COL_NAME_TRIP_DAY_OF_WEEK, dayofweek(col(COL_NAME_PICKUP_DATETIME)))) match
     {
       case Success(df) => df
