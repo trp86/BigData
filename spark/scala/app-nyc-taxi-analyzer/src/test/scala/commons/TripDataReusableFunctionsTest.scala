@@ -1,6 +1,5 @@
 package commons
 
-import commons.ReusableFunctions
 import logic.Test.sparkSession
 import org.apache.spark.sql.functions.{col, concat_ws}
 import org.apache.spark.sql.{DataFrame, Row, SparkSession}
@@ -9,7 +8,6 @@ import org.scalatest.PrivateMethodTester
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import org.apache.spark.sql.types._
-import org.scalatest
 
 class TripDataReusableFunctionsTest extends AnyFunSpec with Matchers with PrivateMethodTester{
 
@@ -237,6 +235,9 @@ class TripDataReusableFunctionsTest extends AnyFunSpec with Matchers with Privat
   }
 
 
+
+}
+
 object TripDataReusableFunctionsTest {
 
   val testSparkSession = SparkSession
@@ -250,5 +251,4 @@ object TripDataReusableFunctionsTest {
   val tripDatareusableFunctions = new TripDataReusableFunctions(testSparkSession)
   val reusableFunctions = new ReusableFunctions(testSparkSession)
 
-}
 }
