@@ -203,7 +203,6 @@ class TripDataReusableFunctionsTest extends AnyFunSpec with Matchers with Privat
 
       // given
       val inputDf = reusableFunctions.createDataFrameFromCsvFiles("""src/test/resources/inputdata/yellow_tripdata_subset_2014-01.csv""")
-      // inputDf.show
 
      // when
       val (actualSuccessDf, actualErrorDf) = tripDatareusableFunctions.performDQandAddColumns(inputDf)
@@ -228,7 +227,6 @@ class TripDataReusableFunctionsTest extends AnyFunSpec with Matchers with Privat
       val expectedSuccessDfString = """[CMT|2014-01-09 20:45:25|2014-01-09 20:52:31|1|0.7|-73.994770000000003|40.736828000000003|1|N|-73.982226999999995|40.731789999999997|CRD|6.5|0.5|0.5|1.4|0.0|8.9|2014-01-09|20|5]"""
       val expectedErrorDfString = """[CMT|2014-01-09 20:45:25|2014-01-09 20:52:31|1|5000.0|-73.994770000000003|40.736828000000003|1|N|-73.982226999999995|40.731789999999997|CRD|6.5|0.5|0.5|1.4|0.0|8.9|trip_distance is not <= 100]"""
 
-      // trip_distance is not <= 100
       actualSuccessDfConcatString shouldBe expectedSuccessDfString
       actualErrorDfConcatString shouldBe expectedErrorDfString
 

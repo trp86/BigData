@@ -9,7 +9,6 @@ class WeatherDataReusableFunctions  (val sparkSession: SparkSession){
 
   val log = Logger.getLogger("WeatherDataReusableFunctions")
   val reusableFunctions = new ReusableFunctions(sparkSession)
-  // import reusableFunctions._
 
   /**
    *
@@ -48,8 +47,15 @@ class WeatherDataReusableFunctions  (val sparkSession: SparkSession){
    */
   private def replaceTwithNegligibleValues(inputDf: DataFrame, columnDetails: List[(String, String, String)]): DataFrame = {
     columnDetails.foldLeft(inputDf) ((df, colDetail) => {
+
+      // Get the column name and data type
       val colName = colDetail._1
       val colDataType = colDetail._2
+
+      // Check if column exists in dataframe
+      reusableFunctions.checkIfColumnsExistInDataFrame(inputDf, List(colName))
+
+      // If decimal then only replace
       colDataType match {
         case "decimal" => df.withColumn(colName, when(col(colName).equalTo("T"), "0.0001").otherwise(col(colName)))
         case _ => df
@@ -73,6 +79,10 @@ class WeatherDataReusableFunctions  (val sparkSession: SparkSession){
    */
 
   private def addTemperatureConditionColumn (inputDf: DataFrame): DataFrame = {
+
+    // Check if COL_NAME_AVERAGE_TEMPARATURE exists in dataframe
+    reusableFunctions.checkIfColumnsExistInDataFrame(inputDf, List(COL_NAME_AVERAGE_TEMPARATURE))
+
     inputDf.withColumn(COL_NAME_TEMPARATURE_CONDITION, when(col(COL_NAME_AVERAGE_TEMPARATURE) < 32, "verycold")
       .when(col(COL_NAME_AVERAGE_TEMPARATURE) >= 32 && col(COL_NAME_AVERAGE_TEMPARATURE) < 59, "cold")
       .when(col(COL_NAME_AVERAGE_TEMPARATURE) >= 59 && col(COL_NAME_AVERAGE_TEMPARATURE) < 77, "normal")
@@ -88,12 +98,17 @@ class WeatherDataReusableFunctions  (val sparkSession: SparkSession){
    */
 
   private def addSnowFallConditionColumn (inputDf: DataFrame): DataFrame = {
-    inputDf.withColumn(COL_NAME_SNOWFALL_CONDITION, when(col(COL_NAME_SNOWFALL) <= 0 , "nosnow")
+
+    // Check if COL_NAME_SNOWFALL exists in dataframe
+    reusableFunctions.checkIfColumnsExistInDataFrame(inputDf, List(COL_NAME_SNOWFALL))
+
+    inputDf.withColumn(COL_NAME_SNOWFALL_CONDITION, when(col(COL_NAME_SNOWFALL) <= 0.0001 , "nosnow")
       .when(col(COL_NAME_SNOWFALL) >= 0.0001 && col(COL_NAME_SNOWFALL) < 4, "moderate")
       .when(col(COL_NAME_SNOWFALL) >= 4 && col(COL_NAME_SNOWFALL) < 15, "heavy")
       .otherwise("violent")
     )
   }
+
 
   /**
    *
@@ -102,7 +117,11 @@ class WeatherDataReusableFunctions  (val sparkSession: SparkSession){
    */
 
   private def addSnowDepthConditionColumn (inputDf: DataFrame): DataFrame = {
-    inputDf.withColumn(COL_NAME_SNOWDEPTH_CONDITION, when(col(COL_NAME_SNOWDEPTH) <= 0 || col(COL_NAME_SNOWDEPTH) <= 0, "nosnow")
+
+    // Check if COL_NAME_SNOWDEPTH exists in dataframe
+    reusableFunctions.checkIfColumnsExistInDataFrame(inputDf, List(COL_NAME_SNOWDEPTH))
+
+    inputDf.withColumn(COL_NAME_SNOWDEPTH_CONDITION, when(col(COL_NAME_SNOWDEPTH) <= 0.0001 , "nosnow")
       .when(col(COL_NAME_SNOWDEPTH) >= 0.0001 && col(COL_NAME_SNOWDEPTH) < 4, "moderate")
       .when(col(COL_NAME_SNOWDEPTH) >= 4 && col(COL_NAME_SNOWDEPTH) < 15, "heavy")
       .otherwise("violent")
@@ -117,13 +136,16 @@ class WeatherDataReusableFunctions  (val sparkSession: SparkSession){
    */
 
   private def addRainConditionColumn (inputDf: DataFrame): DataFrame = {
+
+    // Check if COL_NAME_PRECIPITATION exists in dataframe
+    reusableFunctions.checkIfColumnsExistInDataFrame(inputDf, List(COL_NAME_PRECIPITATION))
+
     inputDf.withColumn(COL_NAME_RAIN_CONDITION, when(col(COL_NAME_PRECIPITATION) <= 0 , "norain")
       .when(col(COL_NAME_PRECIPITATION) > 0 && col(COL_NAME_PRECIPITATION) < 0.3, "moderate")
       .when(col(COL_NAME_PRECIPITATION) >= 0.3 && col(COL_NAME_PRECIPITATION) < 2, "heavy")
       .otherwise("violent")
     )
   }
-
 
 
 }
