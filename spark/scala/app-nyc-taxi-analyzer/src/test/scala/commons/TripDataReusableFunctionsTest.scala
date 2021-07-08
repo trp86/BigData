@@ -221,7 +221,6 @@ class TripDataReusableFunctionsTest extends AnyFunSpec with Matchers with Privat
         col("payment_type"), col("fare_amount"), col("surcharge"), col("mta_tax"), col("tip_amount"),
         col("tolls_amount"), col("total_amount"), col("rejectReason")))
 
-      actualErrorDf.show(false)
       val actualSuccessDfConcatString = actualSuccessDfWithConcatCol.select('concatCol).collect() (0).toString()
       val actualErrorDfConcatString = actualErrorDfWithConcatCol.select('concatCol).collect() (0).toString()
 
