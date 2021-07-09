@@ -1,6 +1,5 @@
 package commons
 
-import logic.Test.sparkSession
 import org.apache.spark.sql.types._
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.scalatest.PrivateMethodTester
@@ -11,7 +10,7 @@ import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 class WeatherDataReusableFunctionsTest extends AnyFunSpec with Matchers with PrivateMethodTester {
 
   import WeatherDataReusableFunctionsTest._
-  import sparkSession.implicits._
+  import testSparkSession.implicits._
 
   describe("when replaceTwithNegligibleValues function is invoked") {
 

@@ -1,6 +1,5 @@
 package commons
 
-import logic.Test.sparkSession
 import org.apache.spark.sql.functions.{col, concat_ws}
 import org.apache.spark.sql.{DataFrame, Row, SparkSession}
 import org.scalatest.matchers.must.Matchers
@@ -11,8 +10,9 @@ import org.apache.spark.sql.types._
 
 class TripDataReusableFunctionsTest extends AnyFunSpec with Matchers with PrivateMethodTester{
 
-  import sparkSession.implicits._
+
   import TripDataReusableFunctionsTest._
+  import testSparkSession.implicits._
 
   describe ("when addTripDateColumn function is invoked") {
 

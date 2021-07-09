@@ -1,7 +1,6 @@
 package commons
 
 import commons.ReusableFunctionsTest._
-import logic.Test.sparkSession
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.functions.to_date
 import org.apache.spark.sql.types.StructType
@@ -15,7 +14,7 @@ import org.apache.spark.sql.types._
 
 class ReusableFunctionsTest extends AnyFunSpec with Matchers with PrivateMethodTester{
 
-  import sparkSession.implicits._
+  import testSparkSession.implicits._
 
   describe ("when createDataFrameFromCsvFiles function is invoked") {
 

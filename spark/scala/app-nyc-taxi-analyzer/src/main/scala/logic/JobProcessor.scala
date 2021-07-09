@@ -50,10 +50,12 @@ object JobProcessor  {
     dfWeatherError.write.partitionBy("rejectReason").mode(SaveMode.Overwrite).save(processedDataErrorWeatherPersistPath)
 
 
-    // TODO Put left join instead of join
+    // TODO Put left join instead of join done
     // TODO Read the csv zip file instead of normal csv file
     // TODO Add install.md,changelog.md and readme.md
     // TODO Add jacaco plugin
+    // TODO Remove SparkConfigs file
+    // TODO Remove Test File
     // TODO Check why tests are not running when mvn test is executed
 
   }
