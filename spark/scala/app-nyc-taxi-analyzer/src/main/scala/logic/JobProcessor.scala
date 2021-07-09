@@ -2,7 +2,7 @@ package logic
 
 import JobConfiguration._
 import commons.{ReusableFunctions, TripDataReusableFunctions, WeatherDataReusableFunctions}
-import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.{SaveMode, SparkSession}
 
 
 object JobProcessor  {
@@ -10,65 +10,52 @@ object JobProcessor  {
   def process(sparkSession: SparkSession): Unit = {
 
     val reusableFunctions = new ReusableFunctions(sparkSession)
-    // import reusableFunctions._
 
     val tripDataReusableFunctions = new TripDataReusableFunctions(sparkSession)
-    // import tripDataReusableFunctions._
 
     val weatherDataReusableFunctions = new WeatherDataReusableFunctions(sparkSession)
-    // import weatherDataReusableFunctions._
-
 
 
     // Create dataframe for trip data
     val dfTrip = reusableFunctions.createDataFrameFromCsvFiles(inputPathTripData)
 
-    // Create dataframe for weather data
-    val dfWeather = reusableFunctions.createDataFrameFromCsvFiles(inputPathWeatherData).withColumnRenamed("date", "weather_date")
+    // Create dataframe for weather data and rename column date to weather_date
+    val dfWeather = reusableFunctions.createDataFrameFromCsvFiles(inputPathWeatherData) // reusableFunctions.renameColumnInDataFrame(reusableFunctions.createDataFrameFromCsvFiles(inputPathWeatherData), "date", "weather_date")
 
     // Check Header for trip data
-    // TODO if header mismatch move the file to rejected location
     val dfTripHeaderActualColumns = dfTrip.columns.toList
     val isTripDataHeaderMatch = reusableFunctions.isHeaderMatch(tripDataExpectedHeader, dfTripHeaderActualColumns)
 
     // Check Header for weather data
-    // TODO if header mismatch move the file to rejected location
     val dfWeatherHeaderActualColumns = dfWeather.columns.toList
     val isWeatherDataHeaderMatch = reusableFunctions.isHeaderMatch(weatherDataExpectedHeader, dfWeatherHeaderActualColumns)
 
+    // If header match fails throw exception and stop job execution
+    if (isTripDataHeaderMatch == false ) throw new Exception ("Trip data header doesnot match.")
+    if (isWeatherDataHeaderMatch == false ) throw new Exception ("Weather data header doesnot match.")
+
+    // Change the date column to weather_date as date is a reserved keyword
+    val dfWeatherRenamed = reusableFunctions.renameColumnInDataFrame(dfWeather, "date", "weather_date")
+
+    // Perform data quality and filter out success and error records
      val (dfTripSuccess, dfTripError) = tripDataReusableFunctions.performDQandAddColumns(dfTrip)
-    dfTripError.show()
-    /* println(dfTripSuccess.count)
-    println(dfTripError.count)
+     val (dfWeatherSuccess, dfWeatherError) = weatherDataReusableFunctions.performDQandAddColumns(dfWeatherRenamed)
 
-    dfTripSuccess.show()
-    dfTripError.show()
-
-    val (dfWeatherSuccess, dfWeatherError) = WeatherDataReusableFunctions.performDQandAddColumns(dfWeather)
-
-    println(dfWeatherSuccess.count)
-    println(dfWeatherError.count)
-
-    dfWeatherSuccess.show()
-    dfWeatherError.show()
-*/
-
-    val (dfWeatherSuccess, dfWeatherError) = weatherDataReusableFunctions.performDQandAddColumns(dfWeather)
     // Join dfTripSuccess and dfWeatherSuccess
-    val df1 = dfTripSuccess.join(dfWeatherSuccess, dfTripSuccess("trip_date") === dfWeatherSuccess("weather_date"), "inner")
+    val dfToPersist = dfTripSuccess.join(dfWeatherSuccess, dfTripSuccess("trip_date") === dfWeatherSuccess("weather_date"), "left_outer")
 
-    // println (df1.count)
-
-      df1.show(false)
-
-    // df1.write.option("header", true).csv("src/main/resources/inputdata/nyccitytaxi/out/")
-
+    // Store the dataframe in partitioned way
+    dfToPersist.write.partitionBy("weather_date").mode(SaveMode.Overwrite).save(processedDataSuccessPersistPath)
+    dfTripError.write.partitionBy("rejectReason").mode(SaveMode.Overwrite).save(processedDataErrorTripPersistPath)
+    dfWeatherError.write.partitionBy("rejectReason").mode(SaveMode.Overwrite).save(processedDataErrorWeatherPersistPath)
 
 
+    // TODO Put left join instead of join
+    // TODO Read the csv zip file instead of normal csv file
+    // TODO Add install.md,changelog.md and readme.md
+    // TODO Add jacaco plugin
+    // TODO Check why tests are not running when mvn test is executed
 
-
-
-    return Unit
   }
 
 }

@@ -7,6 +7,7 @@ import org.apache.spark.sql.types.{DoubleType, IntegerType, StringType, Timestam
 import org.apache.spark.sql.{DataFrame, Row, SparkSession}
 
 import java.io
+import java.nio.file.{Files, Paths, StandardCopyOption}
 import scala.util.{Failure, Success, Try}
 
 class ReusableFunctions (val sparkSession: SparkSession)  {
@@ -215,9 +216,6 @@ class ReusableFunctions (val sparkSession: SparkSession)  {
   }
 
 
-  // TODO create a method to rename the columns of a dataframe. use fold left
-  // def renameDataFrameColumn(inputDF: DataFrame, colDetails)
-
   /**
    *
    * @param inputDF
@@ -236,13 +234,19 @@ class ReusableFunctions (val sparkSession: SparkSession)  {
    *
    * @param inputDF
    * @param columnName
-   * @return Unit
+   * @return DataFrame
    */
-  // TODO not to be used
-  def checkIfColumnExistInDataFrame(inputDF: DataFrame, columnName: String): Unit = {
-    val columnsPresentInDf = inputDF.columns.toList
-    if (!columnsPresentInDf.contains(columnName)) {
-      throw new Exception (columnName + " not present in dataframe.")
+  def renameColumnInDataFrame(inputDF: DataFrame, oldColumnName: String, newColumnName: String): DataFrame = {
+
+    // Check if column exists
+    checkIfColumnsExistInDataFrame (inputDF, List(oldColumnName))
+
+    Try(inputDF.withColumnRenamed(oldColumnName, newColumnName)) match {
+      case Success(df) => df
+      case Failure(exception) => {
+        log.error("Exception occured while renaming column in dataframe")
+        throw exception
+      }
     }
   }
 

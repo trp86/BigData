@@ -1,7 +1,9 @@
 package logic
 
 
+import logic.JobConfiguration.config
 import org.apache.log4j.{Logger, PropertyConfigurator}
+
 import java.util.Properties
 
 class JobConfiguration (propertiesFile: String){
@@ -41,7 +43,12 @@ object JobConfiguration {
   val weatherDataDQnegativeValueCheckColumns = config.properties.getProperty("weather.data.dq.negativevaluecheck.columns").split(""",""").toList
   val weatherDataDQcolumnsOrValueCompare = config.properties.getProperty("weather.data.dq.columnsorvalue.compare").split("""\|""").toList
 
-  val processedData: String = config.properties.getProperty("processed.data.path")
+
+  // Processed Data location
+  val processedDataSuccessPersistPath = config.properties.getProperty("processed.data.success.path")
+  val processedDataErrorTripPersistPath = config.properties.getProperty("processed.data.error.trip.path")
+  val processedDataErrorWeatherPersistPath = config.properties.getProperty("processed.data.error.weather.path")
+
 
 
   // Column names

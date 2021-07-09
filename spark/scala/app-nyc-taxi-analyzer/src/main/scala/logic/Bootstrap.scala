@@ -1,6 +1,5 @@
 package logic
 
-import commons.SparkConfigs
 import org.apache.log4j.{Logger, PropertyConfigurator}
 import org.apache.spark.sql.SparkSession
 

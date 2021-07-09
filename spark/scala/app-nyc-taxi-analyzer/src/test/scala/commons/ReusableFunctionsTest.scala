@@ -371,6 +371,44 @@ class ReusableFunctionsTest extends AnyFunSpec with Matchers with PrivateMethodT
 
   }
 
+  describe ("when renameColumnInDataFrame function is invoked") {
+
+    it ("should rename a column in dataframe if column exists") {
+
+      // given
+      val inputDf = Seq(("CMT")).toDF("vendor_id")
+
+      // when
+      val actualDF = reusableFunctions.renameColumnInDataFrame(inputDf, "vendor_id", "vendorid")
+
+      // then assert
+      val expectedDF = Seq(("CMT")).toDF("vendorid")
+      actualDF.collect() should contain theSameElementsAs expectedDF.collect()
+      expectedDF.columns.toList shouldBe List("vendorid")
+
+
+    }
+
+    it ("should throw exception if columns provided to rename are not present in dataframe") {
+
+      // given
+      val inputDf = Seq(("CMT")).toDF("vendor_id")
+
+      // when
+      val actualException = intercept[Exception](reusableFunctions.renameColumnInDataFrame(inputDf, "vendorId", "vendorid"))
+
+      // then assert
+      val expectedExceptionMessage = """vendorId not present in dataframe."""
+      expectedExceptionMessage shouldBe actualException.getMessage
+
+
+    }
+
+  }
+
+
+
+
 }
 
 object ReusableFunctionsTest {
