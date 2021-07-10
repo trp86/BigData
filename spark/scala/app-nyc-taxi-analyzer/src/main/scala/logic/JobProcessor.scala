@@ -45,9 +45,9 @@ object JobProcessor  {
     val dfToPersist = dfTripSuccess.join(dfWeatherSuccess, dfTripSuccess("trip_date") === dfWeatherSuccess("weather_date"), "left_outer")
 
     // Store the dataframe in partitioned way
-    dfToPersist.write.partitionBy("weather_date").mode(SaveMode.Overwrite).save(processedDataSuccessPersistPath)
-    dfTripError.write.partitionBy("rejectReason").mode(SaveMode.Overwrite).save(processedDataErrorTripPersistPath)
-    dfWeatherError.write.partitionBy("rejectReason").mode(SaveMode.Overwrite).save(processedDataErrorWeatherPersistPath)
+    dfToPersist.write.partitionBy("weather_date").mode(SaveMode.Overwrite).save("""C:\test""")// processedDataSuccessPersistPath)
+   // dfTripError.write.partitionBy("rejectReason").mode(SaveMode.Overwrite).save(processedDataErrorTripPersistPath)
+    // dfWeatherError.write.partitionBy("rejectReason").mode(SaveMode.Overwrite).save(processedDataErrorWeatherPersistPath)
 
 
     // TODO Put left join instead of join done

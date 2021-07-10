@@ -29,7 +29,7 @@ class WeatherDataReusableFunctionsTest extends AnyFunSpec with Matchers with Pri
       val actualDf = weatherDataReusableFunctions invokePrivate replaceTwithNegligibleValuesPlaceHolder(inputDf, columnDetails)
 
       // then assert
-      val expectedDf = Seq(("0.0001", "medium"), ("0.5000", "violent")).toDF("snowdepth", "weathertype").select('snowdepth.cast(DecimalType(14, 4)), 'weathertype)
+      val expectedDf = Seq(("0.0001", "medium"), ("0.5", "violent")).toDF("snowdepth", "weathertype")
       actualDf.collect() should contain theSameElementsAs expectedDf.collect()
     }
 
@@ -268,6 +268,8 @@ class WeatherDataReusableFunctionsTest extends AnyFunSpec with Matchers with Pri
 }
 
   object WeatherDataReusableFunctionsTest {
+
+    System.setProperty("hadoop.home.dir", """C:\Work\winutil\""")
 
     val testSparkSession = SparkSession
       .builder()

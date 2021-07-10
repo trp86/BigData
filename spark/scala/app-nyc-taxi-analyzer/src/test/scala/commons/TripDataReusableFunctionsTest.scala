@@ -240,6 +240,8 @@ class TripDataReusableFunctionsTest extends AnyFunSpec with Matchers with Privat
 
 object TripDataReusableFunctionsTest {
 
+  System.setProperty("hadoop.home.dir", """C:\Work\winutil\""")
+
   val testSparkSession = SparkSession
     .builder()
     .appName("app-nyc-taxi-analyzer-test")

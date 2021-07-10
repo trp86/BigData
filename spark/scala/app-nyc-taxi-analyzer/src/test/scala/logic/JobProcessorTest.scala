@@ -31,6 +31,9 @@ class JobProcessorTest extends AnyFunSpec with Matchers with PrivateMethodTester
 }
 
 object JobProcessorTest {
+
+  System.setProperty("hadoop.home.dir", """C:\Work\winutil\""")
+
   val testSparkSession = SparkSession
     .builder()
     .appName("app-nyc-taxi-analyzer-test")

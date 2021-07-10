@@ -28,7 +28,7 @@ class ReusableFunctionsTest extends AnyFunSpec with Matchers with PrivateMethodT
       val actualDf = reusableFunctions.createDataFrameFromCsvFiles(csvFileWithPath)
 
       // then assert
-      actualDf.collect() should contain theSameElementsAs expectedDf.collect()
+     actualDf.collect() should contain theSameElementsAs expectedDf.collect()
 
     }
 
@@ -412,6 +412,8 @@ class ReusableFunctionsTest extends AnyFunSpec with Matchers with PrivateMethodT
 
 object ReusableFunctionsTest {
 
+  System.setProperty("hadoop.home.dir", """C:\Work\winutil\""")
+
    val testSparkSession = SparkSession
     .builder()
     .appName("app-nyc-taxi-analyzer-test")
@@ -422,7 +424,7 @@ object ReusableFunctionsTest {
 
   val reusableFunctions = new ReusableFunctions(testSparkSession)
 
-  val someSampleCsvWithPath = """src/test/resources/inputdata/"""
+  val someSampleCsvWithPath = """src/test/resources/inputdata/someSample.csv"""
   val someInvalidPath = """some/invalid/path"""
   val someHeaderString = """vendor_id,start_date"""
   val someColumnDetails: List[(String, String, String)] = """vendor_id:string|total_cust:int|fare:double|maximumtemperature:decimal:(14,4)|pickup_datetime:datetime|weather_date:date:dd-MM-yyyy""".split("""\|""").map(x => {

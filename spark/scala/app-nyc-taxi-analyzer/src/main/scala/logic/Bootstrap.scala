@@ -5,10 +5,15 @@ import org.apache.spark.sql.SparkSession
 
 object Bootstrap extends App  {
 
+  System.setProperty("hadoop.home.dir", """C:\Work\winutil\""")
+
+
   val log = Logger.getLogger(Bootstrap.getClass)
   PropertyConfigurator.configure("src/main/resources/conf/log4j.properties")
 
-  // SparkSession
+  println("Hello Worl")
+
+   // SparkSession
   val sparkSession = SparkSession
     .builder()
     .appName("app-nyc-taxi-analyzer")
@@ -21,5 +26,6 @@ object Bootstrap extends App  {
   log.info("Spark session object created successfully.")
 
 
-  JobProcessor.process(sparkSession)
+
+   JobProcessor.process(sparkSession)
 }
