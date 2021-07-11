@@ -53,5 +53,5 @@ data_type  | string | timestamp | timestamp | int | double | string | string | i
 Below are the details for weather data.
 
 field_name | weather_date | maximumtemperature |  minimumtemperature | averagetemperature | precipitation | snowfall | snowdepth
-    ---    | ---  | ---  | ---  | ---  | ---  | ---  | ---  
+---        | ---  | ---  | ---  | ---  | ---  | ---  | ---  
 data_type  | date | decimal:(14,4) | decimal:(14,4) | decimal:(14,4) | decimal:(14,4) | decimal:(14,4) | decimal:(14,4)
