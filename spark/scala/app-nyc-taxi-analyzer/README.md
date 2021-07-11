@@ -102,7 +102,7 @@ data_type  | date | decimal:(14,4) | decimal:(14,4) | decimal:(14,4) | decimal:(
      snowdepth >= 4 && snowdepth < 15 | heavy
      snowdepth >= 15 | violent 
 
-- **_rain_condition_**
+    - **_rain_condition_**
 
     Condition               | value
     ---                     | ---- 
