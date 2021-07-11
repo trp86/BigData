@@ -11,12 +11,12 @@ There are two data source files which are used in this application. Below are th
 1) **NYC TLC Trip Record Data** : The dataset include fields capturing pick-up and drop-off dates/times, pick-up and drop-off locations, trip distances, 
    itemized fares, rate types, payment types, and driver-reported passenger counts. More information about the dataset could be 
    found here https://www1.nyc.gov/site/tlc/about/tlc-trip-record-data.page
+   
+    **_Schema of the data:_**
 
-   **_Schema of the data:_**
-
-   field_name | vendor_id | pickup_datetime | dropoff_datetime | passenger_count | trip_distance | pickup_longitude | pickup_latitude | rate_code | store_and_fwd_flag | dropoff_longitude | dropoff_latitude | payment_type | fare_amount | surcharge | mta_tax | tip_amount | tolls_amount | total_amount
-       ---        | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  
-   data_type  | string | timestamp | timestamp | int | double | string | string | int | string | string | string | string | double | double | double | double | double | double
+    field_name | vendor_id | pickup_datetime | dropoff_datetime | passenger_count | trip_distance | pickup_longitude | pickup_latitude | rate_code | store_and_fwd_flag | dropoff_longitude | dropoff_latitude | payment_type | fare_amount | surcharge | mta_tax | tip_amount | tolls_amount | total_amount
+        ---        | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  
+    data_type  | string | timestamp | timestamp | int | double | string | string | int | string | string | string | string | double | double | double | double | double | double
 
  
 
