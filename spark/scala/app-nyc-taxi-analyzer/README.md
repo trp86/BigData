@@ -176,6 +176,8 @@ Data Analysis and Visualization is performed through Apache Zeppelin notebooks. 
 - **Apache Spark 2.4.7**
 - **Apache Zeppelin 0.8.2**
 - **jacoco-maven-plugin 0.8.7**
+- **IntelliJ IDEA 2021.1.2 (Community Edition)**
+  
 
 
 ## Best Practices
