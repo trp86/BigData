@@ -7,11 +7,8 @@ object Bootstrap extends App  {
 
   System.setProperty("hadoop.home.dir", """C:\Work\winutil\""")
 
-
   val log = Logger.getLogger(Bootstrap.getClass)
   PropertyConfigurator.configure("src/main/resources/conf/log4j.properties")
-
-  println("Hello Worl")
 
    // SparkSession
   val sparkSession = SparkSession
@@ -22,10 +19,7 @@ object Bootstrap extends App  {
 
   // Spark Context
   val sparkContext = sparkSession.sparkContext
-
   log.info("Spark session object created successfully.")
-
-
 
    JobProcessor.process(sparkSession)
 }

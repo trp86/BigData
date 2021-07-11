@@ -4,7 +4,6 @@ import JobConfiguration._
 import commons.{ReusableFunctions, TripDataReusableFunctions, WeatherDataReusableFunctions}
 import org.apache.spark.sql.{SaveMode, SparkSession}
 
-
 object JobProcessor  {
 
   def process(sparkSession: SparkSession): Unit = {
@@ -14,7 +13,6 @@ object JobProcessor  {
     val tripDataReusableFunctions = new TripDataReusableFunctions(sparkSession)
 
     val weatherDataReusableFunctions = new WeatherDataReusableFunctions(sparkSession)
-
 
     // Create dataframe for trip data
     val dfTrip = reusableFunctions.createDataFrameFromCsvFiles(inputPathTripData)
@@ -45,17 +43,12 @@ object JobProcessor  {
     val dfToPersist = dfTripSuccess.join(dfWeatherSuccess, dfTripSuccess("trip_date") === dfWeatherSuccess("weather_date"), "left_outer")
 
     // Store the dataframe in partitioned way
-    dfToPersist.write.partitionBy("weather_date").mode(SaveMode.Overwrite).save("""C:\test""")// processedDataSuccessPersistPath)
-   // dfTripError.write.partitionBy("rejectReason").mode(SaveMode.Overwrite).save(processedDataErrorTripPersistPath)
-    // dfWeatherError.write.partitionBy("rejectReason").mode(SaveMode.Overwrite).save(processedDataErrorWeatherPersistPath)
+    dfToPersist.write.partitionBy("weather_date").mode(SaveMode.Overwrite).save(processedDataSuccessPersistPath)
+    dfTripError.write.partitionBy("rejectReason").mode(SaveMode.Overwrite).save(processedDataErrorTripPersistPath)
+    dfWeatherError.write.partitionBy("rejectReason").mode(SaveMode.Overwrite).save(processedDataErrorWeatherPersistPath)
 
-
-    // TODO Put left join instead of join done
-    // TODO Read the csv zip file instead of normal csv file
     // TODO Add install.md,changelog.md and readme.md
     // TODO Add jacaco plugin
-    // TODO Remove SparkConfigs file
-    // TODO Remove Test File
     // TODO Check why tests are not running when mvn test is executed
 
   }
