@@ -41,9 +41,7 @@ matches then the files are processed further or else it is rejected.
 2) **Column Name Check** : If any of the columns have a reserved keyword then the column names are modified. Only one column name is renamed here.
 In weather dataset there is a column named '**date**'. This column is renamed to '**weather_date**'.
    
-3) **Negative Value Check** : Few columns should never have negative values. If these columns have negative value then records are rejected. For 
-   trip data these columns undergo this check ```trip_distance,fare_amount,surcharge,mta_tax,tip_amount,tolls_amount,total_amount,passenger_count```  and
-   for weather data these columns undergo this check ```precipitation,snowfall,snowdepth```
+3) **Negative Value Check** : Few columns should never have negative values. If these columns have negative value then records are rejected. For trip data these columns undergo this check ```trip_distance,fare_amount,surcharge,mta_tax,tip_amount,tolls_amount,total_amount,passenger_count```  and for weather data these columns undergo this check ```precipitation,snowfall,snowdepth```
    
    
 
