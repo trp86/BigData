@@ -55,3 +55,28 @@ Below are the details for weather data.
 field_name | weather_date | maximumtemperature |  minimumtemperature | averagetemperature | precipitation | snowfall | snowdepth
 ---        | ---  | ---  | ---  | ---  | ---  | ---  | ---  
 data_type  | date | decimal:(14,4) | decimal:(14,4) | decimal:(14,4) | decimal:(14,4) | decimal:(14,4) | decimal:(14,4)
+
+6) **Column or Value Compare** : Few columns are usually present which have certain limit of ceiling value. If the values of these columns exceed 
+   than ceiling value then the records are rejected. 
+   For trip data below checks are done.
+   - pickup_datetime < dropoff_datetime
+   - trip_distance <= 100 
+
+    For weather data below checks are done.
+    - minimumtemperature < maximumtemperature
+
+7) **Adding additional columns** : For trip data below columns are added to original data.
+   - trip_date
+   - trip_hour
+   - trip_day_of_week
+   To derive these columns ```pickup_datetime``` column is used
+  
+   For weather data below columns are added.
+    - temperature_condition
+    
+    Condition               | value
+    ---                     | ---- 
+    averagetemperature < 32 | verycold 
+
+
+   
