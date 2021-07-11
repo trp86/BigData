@@ -14,9 +14,9 @@ There are two data source files which are used in this application. Below are th
 
    **_Schema of the data:_**
 
-   field_name | date | maximumtemperature |  minimumtemperature | averagetemperature | precipitation | snowfall | snowdepth
-       ---        | ---  | ---  | ---  | ---  | ---  | ---  | ---  
-   data_type  | date | double | double | double | double | double | double
+   field_name | date
+   ---        | ---  
+   data_type  | date 
  
 
 2) **Weather Data Set** : The dataset contains information about weather in NewYork for a specified year. More information about the dataset could be 
