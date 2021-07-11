@@ -166,3 +166,18 @@ Processed data are persisted in partitioned format. Columns used for partitionin
 ## Data Analysis & Visualization  
 
 Data Analysis and Visualization is performed through Apache Zeppelin notebooks. Spark SQL is used to form sql queries.
+
+## Technology Used
+
+- **Java 1.8.0**
+- **Scala 2.11**
+- **Scala Test 3.2.3**
+- **Log4j 1.2.17**
+- **Apache Spark 2.4.7**
+- **Apache Zeppelin 0.8.2**
+- **jacoco-maven-plugin 0.8.7**
+
+
+## Best Practices
+- Unit test coverage 
+- Scala Style check (Rules are provided in xml file **scalastyle-config.xml**)
