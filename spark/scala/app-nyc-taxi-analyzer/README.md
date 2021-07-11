@@ -119,10 +119,11 @@ data_type  | date | decimal:(14,4) | decimal:(14,4) | decimal:(14,4) | decimal:(
     precipitation >= 0.3 && precipitation < 2 | heavy
     precipitation >= 2 | violent
 
+Records which fail to satisfy the above rules are marked as error records with a reject reason. Schema of the error records have one extra column rejectReason. 
 
 ## Data Processing
 
-Weather and trip data undergo a **left outer join** and final dataframes are created. Columns used for join are **trip_date** (trip dataset) and **weather_date** (weather dataset)
+Weather and trip data (only success records) undergo a **left outer join** and final dataframes are created. Columns used for join are **trip_date** (trip dataset) and **weather_date** (weather dataset)
 
 |    ColumnName    		|  DataType    	|
 | --------------------- | ------------- |
@@ -158,4 +159,10 @@ Weather and trip data undergo a **left outer join** and final dataframes are cre
 | snowfall_condition	| string		|
 | snowdepth_condition	| string		|
 | rain_condition		| string		|
-   
+ 
+
+Processed data are persisted in partitioned format. Columns used for partitioning are **weather_date**. Error records are also persisted in partitioned format. Columns used for partitioning are **rejectReason**.
+
+## Data Analysis & Visualization  
+
+Data Analysis and Visualization is performed through Apache Zeppelin notebooks. Spark SQL is used to form sql queries.
