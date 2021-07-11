@@ -18,9 +18,7 @@ There are two data source files which are used in this application. Below are th
        ---        | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  
    data_type  | string | timestamp | timestamp | int | double | string | string | int | string | string | string | string | double | double | double | double | double | double
 
-vendor_id,pickup_datetime,dropoff_datetime,passenger_count,trip_distance,pickup_longitude,pickup_latitude,rate_code,store_and_fwd_flag,dropoff_longitude,dropoff_latitude,payment_type,fare_amount,surcharge,mta_tax,tip_amount,tolls_amount,total_amount
-
-   
+ 
 
 2) **Weather Data Set** : The dataset contains information about weather in NewYork for a specified year. More information about the dataset could be 
    found here https://www.kaggle.com/mathijs/weather-data-in-new-york-city-2016
