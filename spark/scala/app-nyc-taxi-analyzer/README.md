@@ -120,5 +120,42 @@ data_type  | date | decimal:(14,4) | decimal:(14,4) | decimal:(14,4) | decimal:(
     precipitation >= 2 | violent
 
 
+## Data Processing
 
+Weather and trip data undergo a **left outer join** and final dataframes are created. Columns used for join are **trip_date** (trip dataset) and (**weather_date**) (weather dataset)
+
+|    ColumnName    		|  DataType    	|
+| --------------------- | ------------- |
+| vendor_id				| string  		|  
+| pickup_datetime 		| timestamp 	|
+| dropoff_datetime 		| timestamp 	|	
+| passenger_count		| int			|
+| trip_distance			| double		|
+| pickup_longitude		| int			|
+| pickup_latitude		| int			|
+| rate_code				| int			|
+| store_and_fwd_flag	| string 		|
+| dropoff_longitude		| int			|
+| dropoff_latitude		| int			|
+| payment_type			| string 		|
+| fare_amount			| int			|
+| surcharge				| int			|
+| mta_tax				| int			|
+| tip_amount			| int			|
+| tolls_amount			| int			|
+| total_amount			| int			|
+| trip_date				| date 			| 
+| trip_hour				| int			|
+| trip_day_of_week		| int			|
+| weather_date			| date 			|
+| maximumtemperature	| decimal(14,4) |
+| minimumtemperature	| decimal(14,4) |
+| averagetemperature	| decimal(14,4) |
+| precipitation			| decimal(14,4) |
+| snowfall				| decimal(14,4) |
+| snowdepth				| decimal(14,4) |
+| temperature_condition	| string		|
+| snowfall_condition	| string		|
+| snowdepth_condition	| string		|
+| rain_condition		| string		|
    
