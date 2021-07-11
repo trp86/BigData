@@ -35,12 +35,23 @@ analysis.
 
 Below are the tasks that are performed during this phase.
 
-1) **Header Check** : As the file format used is CSV hence both the data files will have a header. Hence for both the datasets header is validated. If header matches then the files are processed further or else it is rejected. 
+1) **Header Check** : As the file format used is CSV hence both the data files will have a header. Hence, for both the datasets header validation is done. If header matches then the files are processed further or else it is rejected. 
    
 2) **Column Name Check** : If any of the columns have a reserved keyword then the column names are modified. Only one column name is renamed here. In weather dataset there is a column named '**date**'. This column is renamed to '**weather_date**'.
    
 3) **Negative Value Check** : Few columns should never have negative values. If these columns have negative value then records are rejected. For trip data these columns undergo this check ```trip_distance,fare_amount,surcharge,mta_tax,tip_amount,
    tolls_amount,total_amount,passenger_count```  and for weather data these columns undergo this check ```precipitation,snowfall,snowdepth```
    
-   
+4) **Date Or Timestamp column Check** : The date and timestamp columns should have valid dates and timestamp. If not then the records are rejected. For trip data ```pickup_datetime,dropoff_datetime```  columns undergo this check.  
 
+5) **Assign proper data type** : Most appropriate data types are assigned to the columns. Below are the details for trip data.
+
+field_name | vendor_id | pickup_datetime | dropoff_datetime | passenger_count | trip_distance | pickup_longitude | pickup_latitude | rate_code | store_and_fwd_flag | dropoff_longitude | dropoff_latitude | payment_type | fare_amount | surcharge | mta_tax | tip_amount | tolls_amount | total_amount
+   ---     | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  | ---  
+data_type  | string | timestamp | timestamp | int | double | string | string | int | string | string | string | string | double | double | double | double | double | double
+
+Below are the details for weather data.
+
+field_name | weather_date | maximumtemperature |  minimumtemperature | averagetemperature | precipitation | snowfall | snowdepth
+    ---    | ---  | ---  | ---  | ---  | ---  | ---  | ---  
+data_type  | date | decimal:(14,4) | decimal:(14,4) | decimal:(14,4) | decimal:(14,4) | decimal:(14,4) | decimal:(14,4)
