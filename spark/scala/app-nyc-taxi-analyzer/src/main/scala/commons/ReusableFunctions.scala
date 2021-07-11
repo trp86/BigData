@@ -42,7 +42,10 @@ class ReusableFunctions (val sparkSession: SparkSession)  {
    * @return True if header matches else false
    */
   def isHeaderMatch(expectedColumnsList: List[String], actualColumnsList: List[String]): Boolean = {
-    !expectedColumnsList.map(actualColumnsList.contains(_)).contains(false)
+    val trimmedExpectedColumnsList = expectedColumnsList.map(x => x.trim)
+    val trimmedActualColumnsList = actualColumnsList.map(x => x.trim)
+
+    !trimmedExpectedColumnsList.map(trimmedActualColumnsList.contains(_)).contains(false)
   }
 
   /**

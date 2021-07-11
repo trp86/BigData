@@ -9,17 +9,14 @@ object JobProcessor  {
   def process(sparkSession: SparkSession): Unit = {
 
     val reusableFunctions = new ReusableFunctions(sparkSession)
-
     val tripDataReusableFunctions = new TripDataReusableFunctions(sparkSession)
-
     val weatherDataReusableFunctions = new WeatherDataReusableFunctions(sparkSession)
 
     // Create dataframe for trip data
     val dfTrip = reusableFunctions.createDataFrameFromCsvFiles(inputPathTripData)
 
     // Create dataframe for weather data and rename column date to weather_date
-    val dfWeather = reusableFunctions.createDataFrameFromCsvFiles(inputPathWeatherData) // reusableFunctions.renameColumnInDataFrame(reusableFunctions.createDataFrameFromCsvFiles(inputPathWeatherData), "date", "weather_date")
-
+    val dfWeather = reusableFunctions.createDataFrameFromCsvFiles(inputPathWeatherData)
     // Check Header for trip data
     val dfTripHeaderActualColumns = dfTrip.columns.toList
     val isTripDataHeaderMatch = reusableFunctions.isHeaderMatch(tripDataExpectedHeader, dfTripHeaderActualColumns)
@@ -43,13 +40,9 @@ object JobProcessor  {
     val dfToPersist = dfTripSuccess.join(dfWeatherSuccess, dfTripSuccess("trip_date") === dfWeatherSuccess("weather_date"), "left_outer")
 
     // Store the dataframe in partitioned way
-    dfToPersist.write.partitionBy("weather_date").mode(SaveMode.Overwrite).save(processedDataSuccessPersistPath)
-    dfTripError.write.partitionBy("rejectReason").mode(SaveMode.Overwrite).save(processedDataErrorTripPersistPath)
-    dfWeatherError.write.partitionBy("rejectReason").mode(SaveMode.Overwrite).save(processedDataErrorWeatherPersistPath)
-
-    // TODO Add install.md,changelog.md and readme.md
-    // TODO Add jacaco plugin
-    // TODO Check why tests are not running when mvn test is executed
+     dfToPersist.write.partitionBy("weather_date").mode(SaveMode.Overwrite).save(processedDataSuccessPersistPath)
+     dfTripError.write.partitionBy("rejectReason").mode(SaveMode.Overwrite).save(processedDataErrorTripPersistPath)
+     dfWeatherError.write.partitionBy("rejectReason").mode(SaveMode.Overwrite).save(processedDataErrorWeatherPersistPath)
 
   }
 
