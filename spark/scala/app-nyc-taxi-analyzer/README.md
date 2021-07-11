@@ -65,7 +65,15 @@ data_type  | date | decimal:(14,4) | decimal:(14,4) | decimal:(14,4) | decimal:(
     For weather data below checks are done.
     - minimumtemperature < maximumtemperature
 
-7) **Adding additional columns** : For trip data below columns are added to original data.
+7) **Replace Values** : In the weather dataset there are few columns of decimal data type which has values as 'T'. This value indicates that value is negligible but not 0. Hence, these values are replaced by 0.0001. Below are the columns which undergo this transformation.
+   - maximumtemperature
+   - minimumtemperature
+   - averagetemperature
+   - precipitation
+   - snowfall
+   - snowdepth 
+    
+8) **Adding additional columns** : For trip data below columns are added to original data.
    - **_trip_date_**
    - **_trip_hour_**
    - **_trip_day_of_week_**
