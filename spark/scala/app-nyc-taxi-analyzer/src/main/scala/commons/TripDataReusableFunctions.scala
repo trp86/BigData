@@ -29,7 +29,7 @@ class TripDataReusableFunctions (val sparkSession: SparkSession)   {
     // Assign data types to columns
     val dfWithTypecastedColumns = reusableFunctions.typecastColumns(successDFDateTimeColumnCheck, tripDataColumns)
 
-    // Data Quality check for columns to be comapred with certain value or any column in dataframe
+    // Data Quality check for columns to be compared with certain value or any column in dataframe
     val (successDFwithColumnsOrValueCompare, errorDFwithColumnsOrValueCompare) = reusableFunctions.dataframeColumnsCompare(dfWithTypecastedColumns, tripDataDQcolumnsOrValueCompare)
 
     // Add trip_date column

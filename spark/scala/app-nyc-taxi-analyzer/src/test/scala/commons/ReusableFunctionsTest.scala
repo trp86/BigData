@@ -412,6 +412,7 @@ class ReusableFunctionsTest extends AnyFunSpec with Matchers with PrivateMethodT
 
 object ReusableFunctionsTest {
 
+  // Only needed if it executes on Windows system
   System.setProperty("hadoop.home.dir", """C:\Work\winutil\""")
 
    val testSparkSession = SparkSession

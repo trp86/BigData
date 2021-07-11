@@ -26,7 +26,7 @@ class WeatherDataReusableFunctions  (val sparkSession: SparkSession){
     // Data Quality check for trip data (Columns should not have negative value)
     val (successDFNegativeValueCheck, errorDFNegativeValueCheck) = reusableFunctions.filterRecordsHavingNegativeValue(dfWithColumnsTypeCast, weatherDataDQnegativeValueCheckColumns)
 
-    // Data Quality check for columns to be comapred with certain value or any column in dataframe
+    // Data Quality check for columns to be compared with certain value or any column in dataframe
     val (successDFwithColumnsOrValueCompare, errorDFwithColumnsOrValueCompare) = reusableFunctions.dataframeColumnsCompare(successDFNegativeValueCheck, weatherDataDQcolumnsOrValueCompare)
 
     // Add additional columns
