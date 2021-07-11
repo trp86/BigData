@@ -8,6 +8,7 @@ object JobProcessor  {
 
   def process(sparkSession: SparkSession): Unit = {
 
+    // Objects for reusable functions
     val reusableFunctions = new ReusableFunctions(sparkSession)
     val tripDataReusableFunctions = new TripDataReusableFunctions(sparkSession)
     val weatherDataReusableFunctions = new WeatherDataReusableFunctions(sparkSession)
@@ -17,6 +18,7 @@ object JobProcessor  {
 
     // Create dataframe for weather data and rename column date to weather_date
     val dfWeather = reusableFunctions.createDataFrameFromCsvFiles(inputPathWeatherData)
+
     // Check Header for trip data
     val dfTripHeaderActualColumns = dfTrip.columns.toList
     val isTripDataHeaderMatch = reusableFunctions.isHeaderMatch(tripDataExpectedHeader, dfTripHeaderActualColumns)

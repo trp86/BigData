@@ -32,6 +32,7 @@ class JobProcessorTest extends AnyFunSpec with Matchers with PrivateMethodTester
 
 object JobProcessorTest {
 
+  // Only needed if it executes on Windows system
   System.setProperty("hadoop.home.dir", """C:\Work\winutil\""")
 
   val testSparkSession = SparkSession

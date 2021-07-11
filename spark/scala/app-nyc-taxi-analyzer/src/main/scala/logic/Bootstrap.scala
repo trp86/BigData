@@ -5,6 +5,7 @@ import org.apache.spark.sql.SparkSession
 
 object Bootstrap extends App  {
 
+  // Only applicable if spark program runs on windows system
   System.setProperty("hadoop.home.dir", """C:\Work\winutil\""")
 
   val log = Logger.getLogger(Bootstrap.getClass)
@@ -17,9 +18,8 @@ object Bootstrap extends App  {
     .config("spark.master", "local[5]")
     .getOrCreate()
 
-  // Spark Context
-  val sparkContext = sparkSession.sparkContext
   log.info("Spark session object created successfully.")
 
-   JobProcessor.process(sparkSession)
+  // Call the process method
+  JobProcessor.process(sparkSession)
 }
