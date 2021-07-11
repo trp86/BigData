@@ -66,17 +66,51 @@ data_type  | date | decimal:(14,4) | decimal:(14,4) | decimal:(14,4) | decimal:(
     - minimumtemperature < maximumtemperature
 
 7) **Adding additional columns** : For trip data below columns are added to original data.
-   - trip_date
-   - trip_hour
-   - trip_day_of_week
+   - **_trip_date_**
+   - **_trip_hour_**
+   - **_trip_day_of_week_**
    To derive these columns ```pickup_datetime``` column is used
   
    For weather data below columns are added.
-    - temperature_condition
+    - **_temperature_condition_**
     
     Condition               | value
     ---                     | ---- 
-    averagetemperature < 32 | verycold 
+    averagetemperature < 32 | verycold
+    averagetemperature >= 32 && averagetemperature < 59 | cold
+    averagetemperature >= 59 && averagetemperature < 77 | normal
+    averagetemperature >= 77 && averagetemperature < 95 | hot
+    averagetemperature > 95 | veryhot
+   
+    **NOTE** : All temparatures are in Fahrenheit
+
+    - **_snowfall_condition_**
+
+     Condition               | value
+     ---                     | ---- 
+     snowfall < 0.0001 | nosnow
+     snowfall >= 0.0001 && snowfall < 4 | moderate
+     snowfall >= 4 && snowfall < 15 | heavy
+     snowfall >= 15 | violent 
+
+    - **_snowdepth_condition_**
+
+    Condition               | value
+     ---                     | ---- 
+     snowdepth < 0.0001 | nosnow
+     snowdepth >= 0.0001 && snowdepth < 4 | moderate
+     snowdepth >= 4 && snowdepth < 15 | heavy
+     snowdepth >= 15 | violent 
+
+- **_rain_condition_**
+
+    Condition               | value
+    ---                     | ---- 
+    precipitation <= 0 | norain
+    precipitation > 0 && precipitation < 0.3 | moderate
+    precipitation >= 0.3 && precipitation < 2 | heavy
+    precipitation >= 2 | violent
+
 
 
    
