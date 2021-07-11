@@ -122,7 +122,7 @@ data_type  | date | decimal:(14,4) | decimal:(14,4) | decimal:(14,4) | decimal:(
 
 ## Data Processing
 
-Weather and trip data undergo a **left outer join** and final dataframes are created. Columns used for join are **trip_date** (trip dataset) and (**weather_date**) (weather dataset)
+Weather and trip data undergo a **left outer join** and final dataframes are created. Columns used for join are **trip_date** (trip dataset) and **weather_date** (weather dataset)
 
 |    ColumnName    		|  DataType    	|
 | --------------------- | ------------- |
