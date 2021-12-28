@@ -3,7 +3,7 @@ import typer
 from pathlib import Path
 
 from src.jobs.main import jobs_main, spark_build
-from src.jobs.utils.general import EnvEnum
+from src.jobs.utils.general import EnvEnum, LibCommons
 from src.jobs.utils import log_utils
 
 
@@ -17,7 +17,9 @@ def main(
     with spark_build(env=env) as spark:
         logger = log_utils.Logger(env=env, spark=spark)
         logger.info("Spark and logger initialized")
-        jobs_main(spark, logger, file_path=file_path)
+
+        libCommons = LibCommons(sparkSession=spark)
+        jobs_main(spark, logger, file_path=file_path, libCommons=libCommons)
 
 
 if __name__ == "__main__":

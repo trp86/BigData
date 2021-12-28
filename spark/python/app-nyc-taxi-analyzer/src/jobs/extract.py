@@ -2,7 +2,7 @@
 from pyspark.sql import SparkSession, DataFrame
 
 
-def extract_file(spark: SparkSession, file_path: str) -> DataFrame:
+def extract_csv_file(spark: SparkSession, file_path: str) -> DataFrame:
     """
     Extract the local csv file into a DF.
 
