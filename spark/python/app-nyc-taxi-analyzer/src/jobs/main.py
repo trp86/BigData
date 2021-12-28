@@ -24,13 +24,11 @@ def jobs_main(spark: SparkSession, logger: Logger, file_path: str) -> None:
     df = extract.extract_file(spark, file_path)
     logger.info(f"{file_path} extracted to DataFrame")
 
-    df.show()
-
-    """count_df = transform.transform_df(df)
+    count_df = transform.transform_df(df)
     logger.info("Counted words in the DataFrame")
 
     load.write_to_path(count_df)
-    logger.info("Written counted words to path")"""
+    logger.info("Written counted words to path")
 
 
 @contextlib.contextmanager
