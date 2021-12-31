@@ -27,14 +27,42 @@ class LibCommons:
         self.sparkSession = sparkSession
 
     def is_header_match(self, expected_columns_list: List, actual_columns_list: List) -> bool:
-            trim_expected_columns_list = list(map(lambda column: column.strip(), expected_columns_list))
-            trim_actual_columns_list = list(map(lambda column: column.strip(), actual_columns_list))
+        """
+        Checks if header list is matching or not. 
 
-            header_match = list(map(lambda column: column in trim_actual_columns_list, trim_expected_columns_list))
+        Args:
+        expected_columns_list (List): Column Names to be expected
+        actual_columns_list (List): Actual Column Names
 
-            return bool(False) if (bool(False) in header_match) else bool(True)
+        Returns:
+        Boolean True if header matches else False
 
-    def read_config_file(self, property_file_path: str) -> dict:
+        """
+        # Trims the extra spaces
+        trim_expected_columns_list = list(map(lambda column: column.strip(), expected_columns_list))
+        trim_actual_columns_list = list(map(lambda column: column.strip(), actual_columns_list))
+        
+        #  Creates a list of Boolean values if a actual column name is present in expected column list
+        header_match = list(map(lambda column: column in trim_actual_columns_list, trim_expected_columns_list))
+
+        #  Boolean True if header matches else False
+        return bool(False) if (bool(False) in header_match) else bool(True)
+
+    def read_config_file(self, config_file_path: str) -> dict:
+        """
+        Reads a config file and returns a python dict 
+
+        Args:
+        config_file_path (str): Config File Path
+
+        Returns:
+        Dict with config parameters
+
+        """    
         config = configparser.RawConfigParser()
-        config.read(property_file_path)
-        return config        
+        
+        if config.read(config_file_path) == []:
+            raise IOError('Cannot open configuration file')
+        else:     
+            # config._sections converts configparser object to python dict
+            return config._sections 
