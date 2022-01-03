@@ -13,7 +13,7 @@ from src.jobs.utils.general import LibCommons
 from src.jobs.utils.log_utils import Logger
 
 
-def jobs_main(spark: SparkSession, logger: Logger, file_path: str, libCommons: LibCommons) -> None:
+def jobs_main(spark: SparkSession, logger: Logger, config_file_path: str, libCommons: LibCommons) -> None:
     """
     High-level function to perform the ETL job.
 
@@ -23,17 +23,24 @@ def jobs_main(spark: SparkSession, logger: Logger, file_path: str, libCommons: L
         file_path (str): path on which the job will be performed
 
     """
+    # Read config file
+    config_file = config_file_path + "conf/app-nyc-taxi-analyzer.ini"
+    config_dict = libCommons.read_config_file (config_file)
 
-    config_dict = libCommons.read_config_file ("/home/codebind/codebase/BigData/spark/python/app-nyc-taxi-analyzer/src/resources/conf/app-nyc-taxi-analyzer.properties")
+    # Create dataframe for trip data
+    data_file_path = config_file_path + "data/"
+    df_trip = extract.extract_csv_file(spark, data_file_path)
+    logger.info("Trip data " f"{data_file_path} extracted to DataFrame")
 
-    df_trip = extract.extract_csv_file(spark, file_path)
-    logger.info(f"{file_path} extracted to DataFrame")
-
+    # Header Check for trip data
     actual_header = df_trip.columns
     expected_header = config_dict['trip.metadata']['expected.header'].split(",")
     header_match_status = libCommons.is_header_match(expected_columns_list=expected_header, actual_columns_list=actual_header)
+    logger.info("Header Match Status for trip data:" + str(header_match_status))
 
-    logger.info("Header Match Status:" + str(header_match_status))
+    # Create dataframe for weather data
+    # df_trip = extract.extract_csv_file(spark, file_path)
+    # logger.info("Trip data" f"{file_path} extracted to DataFrame")
 
      
     """count_df = transform.transform_df(df)

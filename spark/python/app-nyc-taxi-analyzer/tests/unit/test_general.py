@@ -42,7 +42,7 @@ def test_false_condition_is_header_match(init):
 @pytest.mark.read_config_file
 def test_true_condition_read_config_file(init):
     # given
-    test_config_file_path = str(Path(__file__).parent.parent) + """/resources/inputdata/someconfigfile.properties"""
+    test_config_file_path = str(Path(__file__).parent.parent) + """/resources/inputdata/someconfigfile.ini"""
     lib_commons = init [0] 
     expected_config = {"header": {"key": "value"}}
 
@@ -55,7 +55,7 @@ def test_true_condition_read_config_file(init):
 @pytest.mark.read_config_file
 def test_throw_exception_if_config_file_not_present(init):
     # given
-    config_file_path_not_present = str(Path(__file__).parent.parent) + """/resources/inputdata/someconfigfile.properties1"""
+    config_file_path_not_present = str(Path(__file__).parent.parent) + """/resources/inputdata/iamnotpresent.ini"""
     lib_commons = init [0]
 
     # when
@@ -63,6 +63,6 @@ def test_throw_exception_if_config_file_not_present(init):
          lib_commons.read_config_file(config_file_path_not_present)
     
     # then
-    assert str(execinfo.value) == 'Cannot open configuration file'
+    assert str(execinfo.value) == "Cannot open configuration file::- " + config_file_path_not_present
 
 

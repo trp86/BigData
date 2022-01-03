@@ -60,9 +60,8 @@ class LibCommons:
 
         """    
         config = configparser.RawConfigParser()
-        
         if config.read(config_file_path) == []:
-            raise IOError('Cannot open configuration file')
+            raise IOError('Cannot open configuration file::- ' + config_file_path)
         else:     
             # config._sections converts configparser object to python dict
             return config._sections 

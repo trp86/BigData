@@ -9,8 +9,9 @@ from src.jobs.utils import log_utils
 
 def main(
     env: EnvEnum = typer.Argument(..., help="Environment for the spark-job"),
-    file_path: str = typer.Argument(
-        f"file://{Path(__file__).parent}/tests/resources/inputdata/yellow_tripdata_subset_2014-01.csv", help="File which will be parsed"
+    # file_path: Path where all the config files are present
+    config_file_path: str = typer.Argument(
+        f"{Path(__file__).parent}/src/resources/", help="Path where all the config files are present"
     ),
 ) -> None:
     """Execute main function for the package."""
@@ -19,7 +20,7 @@ def main(
         logger.info("Spark and logger initialized")
 
         libCommons = LibCommons(sparkSession=spark)
-        jobs_main(spark, logger, file_path=file_path, libCommons=libCommons)
+        jobs_main(spark, logger, config_file_path=config_file_path, libCommons=libCommons)
 
 
 if __name__ == "__main__":
