@@ -37,11 +37,11 @@ def test_exception_if_sparksession_object_is_null(init):
     test_spark_session = None 
 
     # when
-    with pytest.raises(error) as execinfo:
+    with pytest.raises(IOError) as execinfo:
         extract.extract_csv_file(test_spark_session, test_extract_csv_file_location)
 
     # then
-    assert str(execinfo) == "Spark Session object is None!!!!"
+    assert str(execinfo.value) == "Spark Session object is None!!!!"
     
 @pytest.mark.extract_csv_file
 def test_exception_if_file_path_doesnot_exist(init):
@@ -50,7 +50,7 @@ def test_exception_if_file_path_doesnot_exist(init):
     test_spark_session = init [1] 
 
     # when
-    with pytest.raises(error) as execinfo:
+    with pytest.raises(IOError) as execinfo:
         extract.extract_csv_file(test_spark_session, test_extract_csv_file_location)
 
     # then

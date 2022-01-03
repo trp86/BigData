@@ -28,20 +28,38 @@ def jobs_main(spark: SparkSession, logger: Logger, config_file_path: str, libCom
     config_dict = libCommons.read_config_file (config_file)
 
     # Create dataframe for trip data
-    data_file_path = config_file_path + "data/"
-    df_trip = extract.extract_csv_file(spark, data_file_path)
-    logger.info("Trip data " f"{data_file_path} extracted to DataFrame")
+    trip_data_file_path = config_file_path + "data/nyc_trip/"
+    df_trip = extract.extract_csv_file(spark, trip_data_file_path)
+    logger.info("Trip data " f"{trip_data_file_path} extracted to DataFrame")
 
     # Header Check for trip data
-    actual_header = df_trip.columns
-    expected_header = config_dict['trip.metadata']['expected.header'].split(",")
-    header_match_status = libCommons.is_header_match(expected_columns_list=expected_header, actual_columns_list=actual_header)
-    logger.info("Header Match Status for trip data:" + str(header_match_status))
+    columns_df_trip = df_trip.columns
+    trip_data_expected_header = config_dict['trip.metadata']['expected.header'].split(",")
+    trip_data_header_match_status = libCommons.is_header_match(expected_columns_list=trip_data_expected_header, actual_columns_list=columns_df_trip)
+    logger.info("Header Match Status for trip data:" + str(trip_data_header_match_status))
+
+    # Raise exception if there is a mismatch in header for trip data
+    if trip_data_header_match_status is bool(False):
+        raise IOError("Mismatch in header for trip data.Please verify !!!!!")
 
     # Create dataframe for weather data
-    # df_trip = extract.extract_csv_file(spark, file_path)
-    # logger.info("Trip data" f"{file_path} extracted to DataFrame")
+    weather_data_file_path = config_file_path + "data/weather/"
+    df_weather = extract.extract_csv_file(spark, weather_data_file_path)
+    logger.info("Weather data" f"{weather_data_file_path} extracted to DataFrame")
 
+    # Header Check for weather data
+    columns_df_weather = df_weather.columns
+    weather_data_expected_header = config_dict['weather.metadata']['expected.header'].split(",")
+    weather_data_header_match_status = libCommons.is_header_match(expected_columns_list=weather_data_expected_header, actual_columns_list=columns_df_weather)
+    logger.info("Header Match Status for weather data:" + str(weather_data_header_match_status))
+
+    # Raise exception if there is a mismatch in header for weather data
+    if weather_data_header_match_status is bool(False):
+        raise IOError("Mismatch in header for weather data.Please verify !!!!!")
+
+
+    df_weather.show(20)
+    df_trip.show(20)    
      
     """count_df = transform.transform_df(df)
     logger.info("Counted words in the DataFrame")

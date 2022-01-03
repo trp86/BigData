@@ -42,7 +42,7 @@ def test_false_condition_is_header_match(init):
 @pytest.mark.read_config_file
 def test_true_condition_read_config_file(init):
     # given
-    test_config_file_path = str(Path(__file__).parent.parent) + """/resources/inputdata/someconfigfile.ini"""
+    test_config_file_path = str(Path(__file__).parent.parent) + """/resources/conf/someconfigfile.ini"""
     lib_commons = init [0] 
     expected_config = {"header": {"key": "value"}}
 
