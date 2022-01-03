@@ -1,5 +1,25 @@
 """This module is responsible for transform (T) in ETL."""
+
 from pyspark.sql import DataFrame, functions as func
+
+
+def check_if_column_exists_in_df(df: DataFrame, column_list_to_be_checked: list) -> None:
+
+    """
+    Check if column exists in spark dataframe.
+
+    Args:
+        df (DataFrame): Spark DataFrame to  check if column exists
+        column_list_to_be_checked (list): List of column names to be checked   
+    
+    """
+    columns_present_in_df = df.columns
+    columns_not_present_in_df = list(set(column_list_to_be_checked) - set(columns_present_in_df))
+
+    if len(columns_not_present_in_df) > 0 :
+        raise IOError('Columns not present in dataframe::- ' + str(columns_not_present_in_df))
+    
+
 
 
 def explode_df(df: DataFrame, input_col: str, output_col: str) -> DataFrame:

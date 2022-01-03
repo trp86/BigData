@@ -58,6 +58,9 @@ def jobs_main(spark: SparkSession, logger: Logger, config_file_path: str, libCom
         raise IOError("Mismatch in header for weather data.Please verify !!!!!")
 
 
+    # Change the date column to weather_date as date is a reserved keyword in
+    
+
     df_weather.show(20)
     df_trip.show(20)    
      
