@@ -35,6 +35,18 @@ def rename_column_in_df(df: DataFrame, old_column_name: str, new_column_name: st
     # Rename the column in dataframe
     return df.withColumnRenamed(old_column_name, new_column_name)
 
+def filter_records_having_negative_value(df: DataFrame, column_names: list) -> tuple:
+    """
+    Filter out the records where negative values are not accepted and create an error dataframe with a reason
+
+    Args:
+        df (DataFrame): Spark DataFrame whose column is to be renamed
+        column_names (list): Columns where negative value check will be performed on spark dataframe
+    """
+    return (df, df)
+    
+
+
 
 ##########
 def explode_df(df: DataFrame, input_col: str, output_col: str) -> DataFrame:

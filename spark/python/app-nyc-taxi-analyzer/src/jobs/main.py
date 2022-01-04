@@ -8,12 +8,11 @@ from pathlib import Path
 from typing import Generator
 
 from src.jobs import extract, transform, load
-from src.jobs.utils.general import EnvEnum
-from src.jobs.utils.general import LibCommons
+from src.jobs.utils.general import *
 from src.jobs.utils.log_utils import Logger
 
 
-def jobs_main(spark: SparkSession, logger: Logger, config_file_path: str, libCommons: LibCommons) -> None:
+def jobs_main(spark: SparkSession, logger: Logger, config_file_path: str) -> None:
     """
     High-level function to perform the ETL job.
 
@@ -25,7 +24,7 @@ def jobs_main(spark: SparkSession, logger: Logger, config_file_path: str, libCom
     """
     # Read config file
     config_file = config_file_path + "conf/app-nyc-taxi-analyzer.ini"
-    config_dict = libCommons.read_config_file (config_file)
+    config_dict = read_config_file (config_file_path = config_file)
 
     # Create dataframe for trip data
     trip_data_file_path = config_file_path + "data/nyc_trip/"
@@ -35,7 +34,7 @@ def jobs_main(spark: SparkSession, logger: Logger, config_file_path: str, libCom
     # Header Check for trip data
     columns_df_trip = df_trip.columns
     trip_data_expected_header = config_dict['trip.metadata']['expected.header'].split(",")
-    trip_data_header_match_status = libCommons.is_header_match(expected_columns_list=trip_data_expected_header, actual_columns_list=columns_df_trip)
+    trip_data_header_match_status = is_header_match(expected_columns_list=trip_data_expected_header, actual_columns_list=columns_df_trip)
     logger.info("Header Match Status for trip data:" + str(trip_data_header_match_status))
 
     # Raise exception if there is a mismatch in header for trip data
@@ -50,7 +49,7 @@ def jobs_main(spark: SparkSession, logger: Logger, config_file_path: str, libCom
     # Header Check for weather data
     columns_df_weather = df_weather.columns
     weather_data_expected_header = config_dict['weather.metadata']['expected.header'].split(",")
-    weather_data_header_match_status = libCommons.is_header_match(expected_columns_list=weather_data_expected_header, actual_columns_list=columns_df_weather)
+    weather_data_header_match_status = is_header_match(expected_columns_list=weather_data_expected_header, actual_columns_list=columns_df_weather)
     logger.info("Header Match Status for weather data:" + str(weather_data_header_match_status))
 
     # Raise exception if there is a mismatch in header for weather data
@@ -59,10 +58,14 @@ def jobs_main(spark: SparkSession, logger: Logger, config_file_path: str, libCom
 
 
     # Change the date column to weather_date as date is a reserved keyword in
-    
+    df_weather_renamed = transform.rename_column_in_df(df_weather, "date", "weather_date")
 
-    df_weather.show(20)
-    df_trip.show(20)    
+    t = transform.filter_records_having_negative_value(df = df_weather_renamed, column_names = ["test"])
+
+    t [0].show(20)
+    t [1].show(20)
+    # df_weather_renamed.show(20)
+    # df_trip.show(20)    
      
     """count_df = transform.transform_df(df)
     logger.info("Counted words in the DataFrame")

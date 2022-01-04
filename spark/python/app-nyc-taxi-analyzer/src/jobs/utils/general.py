@@ -12,56 +12,42 @@ class EnvEnum(Enum):
     stage = "stage"
 
 
-class LibCommons:
-    """Common Reusable Functions"""
-    def __init__(
-        self,
-        sparkSession: SparkSession,
-    ) -> None:
-        """
-        Initialize the LibCommons class
+def is_header_match(expected_columns_list: List, actual_columns_list: List) -> bool:
+    """
+    Checks if header list is matching or not. 
 
-        Args:
-            spark (SparkSession): 
-        """
-        self.sparkSession = sparkSession
+    Args:
+    expected_columns_list (List): Column Names to be expected
+    actual_columns_list (List): Actual Column Names
 
-    def is_header_match(self, expected_columns_list: List, actual_columns_list: List) -> bool:
-        """
-        Checks if header list is matching or not. 
+    Returns:
+    Boolean True if header matches else False
 
-        Args:
-        expected_columns_list (List): Column Names to be expected
-        actual_columns_list (List): Actual Column Names
+    """
+    # Trims the extra spaces
+    trim_expected_columns_list = list(map(lambda column: column.strip(), expected_columns_list))
+    trim_actual_columns_list = list(map(lambda column: column.strip(), actual_columns_list))
+    
+    #  Creates a list of Boolean values if a actual column name is present in expected column list
+    header_match = list(map(lambda column: column in trim_actual_columns_list, trim_expected_columns_list))
 
-        Returns:
-        Boolean True if header matches else False
+    #  Boolean True if header matches else False
+    return bool(False) if (bool(False) in header_match) else bool(True)
 
-        """
-        # Trims the extra spaces
-        trim_expected_columns_list = list(map(lambda column: column.strip(), expected_columns_list))
-        trim_actual_columns_list = list(map(lambda column: column.strip(), actual_columns_list))
-        
-        #  Creates a list of Boolean values if a actual column name is present in expected column list
-        header_match = list(map(lambda column: column in trim_actual_columns_list, trim_expected_columns_list))
+def read_config_file(config_file_path: str) -> dict:
+    """
+    Reads a config file and returns a python dict 
 
-        #  Boolean True if header matches else False
-        return bool(False) if (bool(False) in header_match) else bool(True)
+    Args:
+    config_file_path (str): Config File Path
 
-    def read_config_file(self, config_file_path: str) -> dict:
-        """
-        Reads a config file and returns a python dict 
+    Returns:
+    Dict with config parameters
 
-        Args:
-        config_file_path (str): Config File Path
-
-        Returns:
-        Dict with config parameters
-
-        """    
-        config = configparser.RawConfigParser()
-        if config.read(config_file_path) == []:
-            raise IOError('Cannot open configuration file::- ' + config_file_path)
-        else:     
-            # config._sections converts configparser object to python dict
-            return config._sections 
+    """    
+    config = configparser.RawConfigParser()
+    if config.read(config_file_path) == []:
+        raise IOError('Cannot open configuration file::- ' + config_file_path)
+    else:     
+        # config._sections converts configparser object to python dict
+        return config._sections 
