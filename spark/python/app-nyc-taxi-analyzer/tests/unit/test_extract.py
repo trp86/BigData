@@ -6,6 +6,7 @@ import pytest
 from pyspark.sql import SparkSession
 from pathlib import Path
 from src.jobs import extract 
+import pathlib
 
 @pytest.fixture
 def init():
@@ -17,7 +18,7 @@ def init():
 @pytest.mark.extract_csv_file
 def test_true_condition_extract_csv_file(init):
     # given
-    test_extract_csv_file_location =  Path(__file__).parent.parent.name + "/resources/input/test_extract/"
+    test_extract_csv_file_location =  str(pathlib.Path().absolute()) + "/resources/input/test_extract/"
     test_spark_session = init [1] 
     expected_df = test_spark_session.createDataFrame([(1234,56.76), (2341,76.45), (1009,12), (120,75)], schema='vendor_id string, total_amount string')
 

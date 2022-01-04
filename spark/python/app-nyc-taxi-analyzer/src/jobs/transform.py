@@ -20,8 +20,23 @@ def check_if_column_exists_in_df(df: DataFrame, column_list_to_be_checked: list)
         raise IOError('Columns not present in dataframe::- ' + str(columns_not_present_in_df))
     
 
+def rename_column_in_df(df: DataFrame, old_column_name: str, new_column_name: str) -> DataFrame:
+    """
+    Rename a column if exists in spark dataframe
+
+    Args:
+        df (DataFrame): Spark DataFrame whose column is to be renamed
+        old_column_name (str): Old Column Name
+        new_column_name (str): New Column Name
+    """
+    # Check if column exists in dataframe else raise exception
+    check_if_column_exists_in_df(df, [old_column_name])
+
+    # Rename the column in dataframe
+    return df.withColumnRenamed(old_column_name, new_column_name)
 
 
+##########
 def explode_df(df: DataFrame, input_col: str, output_col: str) -> DataFrame:
     """
     Explodes the input_column.
