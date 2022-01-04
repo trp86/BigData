@@ -60,7 +60,7 @@ def jobs_main(spark: SparkSession, logger: Logger, config_file_path: str) -> Non
     # Change the date column to weather_date as date is a reserved keyword in
     df_weather_renamed = transform.rename_column_in_df(df_weather, "date", "weather_date")
 
-    t = transform.filter_records_having_negative_value(df = df_weather_renamed, column_names = ["test"])
+    t = transform.filter_records_having_negative_value(sparksession= spark, df = df_weather_renamed, column_names = ["weather_date"])
 
     t [0].show(20)
     t [1].show(20)

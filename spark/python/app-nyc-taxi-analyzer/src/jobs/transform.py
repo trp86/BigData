@@ -1,7 +1,8 @@
 """This module is responsible for transform (T) in ETL."""
 
 from pyspark.sql import DataFrame, functions as func
-
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import lit
 
 def check_if_column_exists_in_df(df: DataFrame, column_list_to_be_checked: list) -> None:
 
@@ -35,7 +36,7 @@ def rename_column_in_df(df: DataFrame, old_column_name: str, new_column_name: st
     # Rename the column in dataframe
     return df.withColumnRenamed(old_column_name, new_column_name)
 
-def filter_records_having_negative_value(df: DataFrame, column_names: list) -> tuple:
+def filter_records_having_negative_value(sparksession: SparkSession, df: DataFrame, column_names: list) -> tuple:
     """
     Filter out the records where negative values are not accepted and create an error dataframe with a reason
 
@@ -43,6 +44,17 @@ def filter_records_having_negative_value(df: DataFrame, column_names: list) -> t
         df (DataFrame): Spark DataFrame whose column is to be renamed
         column_names (list): Columns where negative value check will be performed on spark dataframe
     """
+    # Check if column exists in dataframe. If not then raise error
+    check_if_column_exists_in_df (df, column_names)
+
+    # Create empty dataframe with schema present in input dataframe along with additional column rejectReason
+    empty_df: DataFrame = sparksession.createDataFrame(sparksession.sparkContext.emptyRDD(), df.schema).withColumn("rejectreason" , lit(""))
+
+    error_df: DataFrame = column_names.fold
+
+    print("PRINT::::::")
+    empty_df.show()
+    print("PRINT COMPLETE::::::")
     return (df, df)
     
 
