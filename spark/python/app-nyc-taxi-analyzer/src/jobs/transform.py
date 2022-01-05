@@ -3,6 +3,8 @@
 from pyspark.sql import DataFrame, functions as func
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import lit
+from pyspark.sql.functions import col
+import functools
 
 def check_if_column_exists_in_df(df: DataFrame, column_list_to_be_checked: list) -> None:
 
@@ -50,10 +52,17 @@ def filter_records_having_negative_value(sparksession: SparkSession, df: DataFra
     # Create empty dataframe with schema present in input dataframe along with additional column rejectReason
     empty_df: DataFrame = sparksession.createDataFrame(sparksession.sparkContext.emptyRDD(), df.schema).withColumn("rejectreason" , lit(""))
 
-    error_df: DataFrame = column_names.fold
+    error_df: DataFrame = functools.reduce(
+        # function
+        lambda accumulated_df, column_name : accumulated_df.union(df.filter(col(column_name) < 0 ).withColumn("rejectreason", lit(column_name + " is negative"))),
+        # list
+        column_names,
+        # accumulator
+        empty_df
+    ) 
 
     print("PRINT::::::")
-    empty_df.show()
+    error_df.show(10, truncate = bool(False))
     print("PRINT COMPLETE::::::")
     return (df, df)
     
