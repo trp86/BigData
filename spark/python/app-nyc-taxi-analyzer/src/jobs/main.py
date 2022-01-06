@@ -56,16 +56,28 @@ def jobs_main(spark: SparkSession, logger: Logger, config_file_path: str) -> Non
     if weather_data_header_match_status is bool(False):
         raise IOError("Mismatch in header for weather data.Please verify !!!!!")
 
+    # Typecast columns for trip data
+    trip_data_column_details = list(map(lambda x: x.split(":"), config_dict['trip.metadata']['columns'].split("|")))
+    list(map(lambda a: a==a.insert(2,"") if len(a) == 2 else a , trip_data_column_details))
 
+    trip_data_typecasted = transform.typecastcolumns(df_trip, trip_data_column_details)
+    trip_data_typecasted.printSchema()
+    
     # Change the date column to weather_date as date is a reserved keyword in
     df_weather_renamed = transform.rename_column_in_df(df_weather, "date", "weather_date")
 
+    # Typecast columns for weather data
+    weather_data_column_details = list(map(lambda x: x.split(":"), config_dict['weather.metadata']['columns'].split("|")))
+    list(map(lambda a: a==a.insert(2,"") if len(a) == 2 else a , weather_data_column_details))
 
-    df_trip.printSchema()
+    weather_data_typecasted = transform.typecastcolumns(df_weather_renamed, weather_data_column_details)
+    weather_data_typecasted.printSchema()
 
-    t = transform.filter_records_having_negative_value(sparksession= spark, df = df_trip, column_names = ["passenger_count", "trip_distance"])
+   # df_trip.printSchema()
 
-    t [0].show(2)
+   # t = transform.filter_records_having_negative_value(sparksession= spark, df = df_trip, column_names = ["passenger_count", "trip_distance"])
+
+ #   t [0].show(2)
    # t [1].show(20)
     # df_weather_renamed.show(20)
     # df_trip.show(20)    

@@ -2,9 +2,10 @@
 
 from pyspark.sql import DataFrame, functions as func
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import lit
-from pyspark.sql.functions import col
+from pyspark.sql.functions import *
 import functools
+from pyspark.sql.types import *
+
 
 def check_if_column_exists_in_df(df: DataFrame, column_list_to_be_checked: list) -> None:
 
@@ -37,6 +38,48 @@ def rename_column_in_df(df: DataFrame, old_column_name: str, new_column_name: st
 
     # Rename the column in dataframe
     return df.withColumnRenamed(old_column_name, new_column_name)
+
+def typecastcolumns(df: DataFrame, columns_with_data_type_details: list) -> DataFrame:
+
+    """
+    Typecasts the spark dataframe as per the data type and precesion if any
+
+    Args:
+        df (DataFrame): Spark DataFrame whose column is to be renamed
+        columns_with_data_type_details (List[(str, str, str)]): List of tuples. Tuple have 3 elements. 0 -> Column Name, 1-> Column DataType, 2->Column Precision 
+    """
+
+    def typecast(df: DataFrame, column_detail: list)-> DataFrame:
+    
+        data_types_dict = {'int' : IntegerType(), 'double': DoubleType(), 'string' : StringType(), 'datetime' : TimestampType(), 'decimal': DecimalType() }
+        typecasted_df = None
+
+        if column_detail[2]  == "":
+            typecasted_df = df.withColumn(column_detail[0], col(column_detail[0]).cast(data_types_dict.get(column_detail[1])))
+        elif column_detail[1]  == "decimal":
+            typecasted_df = df.withColumn(column_detail[0], col(column_detail[0]).cast(column_detail[1] + column_detail[2]))
+        elif column_detail[1]  == "date":
+            typecasted_df = df.withColumn(column_detail[0], to_date(col(column_detail[0]), column_detail[2]))    
+
+        return typecasted_df
+
+    return functools.reduce(
+        # function
+        lambda accumulated_df, column_detail : typecast(accumulated_df, column_detail), 
+        # list
+        columns_with_data_type_details,
+        # accumulator
+        df
+        )
+
+    
+    
+
+   
+
+
+
+    
 
 def filter_records_having_negative_value(sparksession: SparkSession, df: DataFrame, column_names: list) -> tuple:
     """
