@@ -73,14 +73,6 @@ def typecastcolumns(df: DataFrame, columns_with_data_type_details: list) -> Data
         )
 
     
-    
-
-   
-
-
-
-    
-
 def filter_records_having_negative_value(sparksession: SparkSession, df: DataFrame, column_names: list) -> tuple:
     """
     Filter out the records where negative values are not accepted and create an error dataframe with a reason
@@ -95,6 +87,7 @@ def filter_records_having_negative_value(sparksession: SparkSession, df: DataFra
     # Create empty dataframe with schema present in input dataframe along with additional column rejectReason
     empty_df: DataFrame = sparksession.createDataFrame(sparksession.sparkContext.emptyRDD(), df.schema).withColumn("rejectreason" , lit(""))
 
+    # Error DataFrame
     error_df: DataFrame = functools.reduce(
         # function
         lambda accumulated_df, column_name : accumulated_df.union(df.filter(col(column_name) < 0 ).withColumn("rejectreason", lit(column_name + " is negative"))),
@@ -104,13 +97,113 @@ def filter_records_having_negative_value(sparksession: SparkSession, df: DataFra
         empty_df
     ) 
 
-    print("PRINT::::::")
-    error_df.show(10, truncate = bool(False))
-    print("PRINT COMPLETE::::::")
-    return (df, df)
+    # Success DataFrame
+    success_df: DataFrame = functools.reduce(
+        # function
+        lambda accumulated_df, column_name : accumulated_df.filter(col(column_name) >= 0 ),
+        # list
+        column_names,
+        # accumulator
+        df
+    ) 
+
+    return (success_df, error_df)
     
 
+def filter_records_having_improper_datetime_value(sparksession: SparkSession, df: DataFrame, column_names: list) -> tuple:
+    """
+    Filter out the records where datetime value is improper
+    Args:
+        df (DataFrame): Spark DataFrame whose column is to be renamed
+        column_names (list): Columns where datetime value check will be performed on spark dataframe
+    """
+    # Check if column exists in dataframe. If not then raise error
+    check_if_column_exists_in_df (df, column_names)
 
+    # Create empty dataframe with schema present in input dataframe along with additional column rejectReason
+    empty_df: DataFrame = sparksession.createDataFrame(sparksession.sparkContext.emptyRDD(), df.schema).withColumn("rejectreason" , lit(""))
+
+    # Error DataFrame
+    error_df: DataFrame = functools.reduce(
+        # function
+        lambda accumulated_df, column_name : accumulated_df.
+        union(
+            df.withColumn("timestamp_typecasted" , to_timestamp(col(column_name), "yyyy-MM-dd HH:mm:ss")).filter(col("timestamp_typecasted").isNull()).drop(col("timestamp_typecasted")).withColumn("rejectreason" , lit(column_name + " datetime format is invalid"))
+        ),
+        # list
+        column_names,
+        # accumulator
+        empty_df
+    ) 
+
+    # Success DataFrame
+    success_df: DataFrame = functools.reduce(
+        # function
+        lambda accumulated_df, column_name : accumulated_df.
+        withColumn("timestamp_typecasted" , to_timestamp(col(column_name), "yyyy-MM-dd HH:mm:ss")).
+        filter(col("timestamp_typecasted").isNotNull()).
+        drop(col("timestamp_typecasted")),
+        # list
+        column_names,
+        # accumulator
+        df
+    )
+
+    return (success_df, error_df) 
+
+def df_columns_compare(sparksession: SparkSession, df: DataFrame, compare_expressions: list) -> tuple:
+
+    def column_compare(df: DataFrame, compare_expr: str, success_or_error: bool) -> DataFrame:
+        compare_expr_list = compare_expr.split(""" """)
+        (col_name, compare_operator, value_or_col_tobe_compared) = (compare_expr_list[0].strip(), compare_expr_list[1].strip(), compare_expr_list[2].strip())
+
+        print(col_name)
+        print(compare_operator)
+        print(value_or_col_tobe_compared)
+
+        # Get the column datatype
+        col_data_type = df.select(col_name).dtypes [0] [1]
+
+        print("col_data_type::" + col_data_type)
+
+        # For String datatypes compare operator can be only (=, !=)
+        if (col_data_type.casefold == "string".casefold and (compare_operator != "=" or compare_operator != "!=" )):
+            raise ("For string datatype compare operator could only be = and !=")
+
+        compare_expr = col_name.strip() + " " + compare_operator.strip() + " " + value_or_col_tobe_compared.strip()
+        print("compare_expr::" + compare_expr )
+        a = df.filter(~ expr(compare_expr)) if success_or_error else df.filter( ~ expr(compare_expr))
+        a.show()
+        return a
+            
+    # Create empty dataframe with schema present in input dataframe along with additional column rejectReason
+    empty_df: DataFrame = sparksession.createDataFrame(sparksession.sparkContext.emptyRDD(), df.schema).withColumn("rejectreason" , lit(""))
+
+    print(compare_expressions)
+    # Error dataframe
+    #error_df: DataFrame = functools.reduce(
+        # function
+     #   lambda accumulated_df, compare_expr : accumulated_df.union( column_compare(accumulated_df, compare_expr, bool(False))),
+        # list
+      #  compare_expressions,
+        # accumulator
+       # empty_df
+    #) 
+
+
+    # Success dataframe
+    success_df: DataFrame = functools.reduce(
+        # function
+        lambda accumulated_df, compare_expr : column_compare(accumulated_df, compare_expr, bool(True)),
+        # list
+        compare_expressions,
+        # accumulator
+        df
+    ) 
+
+    print("HERE:::")
+
+    return (success_df, success_df)
 
 ##########
 def explode_df(df: DataFrame, input_col: str, output_col: str) -> DataFrame:

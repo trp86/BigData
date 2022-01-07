@@ -55,13 +55,34 @@ def jobs_main(spark: SparkSession, logger: Logger, config_file_path: str) -> Non
     # Raise exception if there is a mismatch in header for weather data
     if weather_data_header_match_status is bool(False):
         raise IOError("Mismatch in header for weather data.Please verify !!!!!")
+ 
+    # Data Quality check for trip data
+    
+    # Filter records and put to error dataframe which is having a negative value
+    trip_data_negative_check_columns =  config_dict['trip.metadata']['dq.negativevaluecheck.columns'].split(",")
+    (success_df_negative_value_check, error_df_negative_value_check) = transform.filter_records_having_negative_value(sparksession= spark, df = df_trip, column_names = trip_data_negative_check_columns)
+
+    
+    trip_data_datetimestamp_check_columns =  config_dict['trip.metadata']['dq.datetimestampformatcheck.columns'].split(",")
+    (success_df_datetime_check, error_df_datetime_check) = transform.filter_records_having_improper_datetime_value(sparksession= spark, df = success_df_negative_value_check, column_names = trip_data_datetimestamp_check_columns)
+    
 
     # Typecast columns for trip data
     trip_data_column_details = list(map(lambda x: x.split(":"), config_dict['trip.metadata']['columns'].split("|")))
     list(map(lambda a: a==a.insert(2,"") if len(a) == 2 else a , trip_data_column_details))
+    trip_data_typecasted = transform.typecastcolumns(success_df_datetime_check, trip_data_column_details)
 
-    trip_data_typecasted = transform.typecastcolumns(df_trip, trip_data_column_details)
-    trip_data_typecasted.printSchema()
+    #trip_data_typecasted.show()
+
+    trip_data_columnsorvalue_check_columns =  config_dict['trip.metadata']['dq.columnsorvalue.compare'].split(",")
+    (success_df_columnsorvalue_check, error_df_columnsorvalue_check) = transform.df_columns_compare(sparksession= spark, df = trip_data_typecasted, compare_expressions = trip_data_columnsorvalue_check_columns)
+    
+    print("HERE1111:::::")
+
+    #success_df_columnsorvalue_check.show(truncate = bool(False))
+    #error_df_columnsorvalue_check.show(truncate = bool(False))
+
+    quit()
     
     # Change the date column to weather_date as date is a reserved keyword in
     df_weather_renamed = transform.rename_column_in_df(df_weather, "date", "weather_date")
@@ -71,7 +92,9 @@ def jobs_main(spark: SparkSession, logger: Logger, config_file_path: str) -> Non
     list(map(lambda a: a==a.insert(2,"") if len(a) == 2 else a , weather_data_column_details))
 
     weather_data_typecasted = transform.typecastcolumns(df_weather_renamed, weather_data_column_details)
-    weather_data_typecasted.printSchema()
+    #weather_data_typecasted.printSchema()
+
+   
 
    # df_trip.printSchema()
 
