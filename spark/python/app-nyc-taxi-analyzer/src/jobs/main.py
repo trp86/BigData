@@ -72,15 +72,11 @@ def jobs_main(spark: SparkSession, logger: Logger, config_file_path: str) -> Non
     list(map(lambda a: a==a.insert(2,"") if len(a) == 2 else a , trip_data_column_details))
     trip_data_typecasted = transform.typecastcolumns(success_df_datetime_check, trip_data_column_details)
 
-    #trip_data_typecasted.show()
-
-    trip_data_columnsorvalue_check_columns =  config_dict['trip.metadata']['dq.columnsorvalue.compare'].split(",")
+    trip_data_columnsorvalue_check_columns =  config_dict['trip.metadata']['dq.columnsorvalue.compare'].split("|")
     (success_df_columnsorvalue_check, error_df_columnsorvalue_check) = transform.df_columns_compare(sparksession= spark, df = trip_data_typecasted, compare_expressions = trip_data_columnsorvalue_check_columns)
     
-    print("HERE1111:::::")
-
-    #success_df_columnsorvalue_check.show(truncate = bool(False))
-    #error_df_columnsorvalue_check.show(truncate = bool(False))
+    success_df_columnsorvalue_check.show(truncate = bool(False))
+    error_df_columnsorvalue_check.show(truncate = bool(False))
 
     quit()
     

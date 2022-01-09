@@ -157,39 +157,28 @@ def df_columns_compare(sparksession: SparkSession, df: DataFrame, compare_expres
         compare_expr_list = compare_expr.split(""" """)
         (col_name, compare_operator, value_or_col_tobe_compared) = (compare_expr_list[0].strip(), compare_expr_list[1].strip(), compare_expr_list[2].strip())
 
-        print(col_name)
-        print(compare_operator)
-        print(value_or_col_tobe_compared)
-
         # Get the column datatype
         col_data_type = df.select(col_name).dtypes [0] [1]
-
-        print("col_data_type::" + col_data_type)
 
         # For String datatypes compare operator can be only (=, !=)
         if (col_data_type.casefold == "string".casefold and (compare_operator != "=" or compare_operator != "!=" )):
             raise ("For string datatype compare operator could only be = and !=")
 
         compare_expr = col_name.strip() + " " + compare_operator.strip() + " " + value_or_col_tobe_compared.strip()
-        print("compare_expr::" + compare_expr )
-        a = df.filter(~ expr(compare_expr)) if success_or_error else df.filter( ~ expr(compare_expr))
-        a.show()
-        return a
+        return df.filter(expr(compare_expr)) if success_or_error else df.filter(~ expr(compare_expr)).withColumn("rejectreason", lit(col_name + " is not " + compare_operator + " " + value_or_col_tobe_compared))
             
     # Create empty dataframe with schema present in input dataframe along with additional column rejectReason
     empty_df: DataFrame = sparksession.createDataFrame(sparksession.sparkContext.emptyRDD(), df.schema).withColumn("rejectreason" , lit(""))
 
-    print(compare_expressions)
     # Error dataframe
-    #error_df: DataFrame = functools.reduce(
+    error_df: DataFrame = functools.reduce(
         # function
-     #   lambda accumulated_df, compare_expr : accumulated_df.union( column_compare(accumulated_df, compare_expr, bool(False))),
+        lambda accumulated_df, compare_expr : accumulated_df.union(column_compare(df, compare_expr, bool(False))),
         # list
-      #  compare_expressions,
-        # accumulator
-       # empty_df
-    #) 
-
+        compare_expressions,
+        # initial or start point 
+        empty_df
+    ) 
 
     # Success dataframe
     success_df: DataFrame = functools.reduce(
@@ -197,13 +186,11 @@ def df_columns_compare(sparksession: SparkSession, df: DataFrame, compare_expres
         lambda accumulated_df, compare_expr : column_compare(accumulated_df, compare_expr, bool(True)),
         # list
         compare_expressions,
-        # accumulator
+        # initial or start point 
         df
     ) 
 
-    print("HERE:::")
-
-    return (success_df, success_df)
+    return (success_df, error_df)
 
 ##########
 def explode_df(df: DataFrame, input_col: str, output_col: str) -> DataFrame:
