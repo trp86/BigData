@@ -3,7 +3,7 @@ building and ETL."""
 
 import contextlib
 import configparser
-from pyspark.sql import SparkSession
+from pyspark.sql import SparkSession, functions as f
 from pathlib import Path
 from typing import Generator
 
@@ -62,11 +62,9 @@ def jobs_main(spark: SparkSession, logger: Logger, config_file_path: str) -> Non
     trip_data_negative_check_columns =  config_dict['trip.metadata']['dq.negativevaluecheck.columns'].split(",")
     (success_df_negative_value_check, error_df_negative_value_check) = transform.filter_records_having_negative_value(sparksession= spark, df = df_trip, column_names = trip_data_negative_check_columns)
 
-    
     trip_data_datetimestamp_check_columns =  config_dict['trip.metadata']['dq.datetimestampformatcheck.columns'].split(",")
     (success_df_datetime_check, error_df_datetime_check) = transform.filter_records_having_improper_datetime_value(sparksession= spark, df = success_df_negative_value_check, column_names = trip_data_datetimestamp_check_columns)
     
-
     # Typecast columns for trip data
     trip_data_column_details = list(map(lambda x: x.split(":"), config_dict['trip.metadata']['columns'].split("|")))
     list(map(lambda a: a==a.insert(2,"") if len(a) == 2 else a , trip_data_column_details))
@@ -75,8 +73,16 @@ def jobs_main(spark: SparkSession, logger: Logger, config_file_path: str) -> Non
     trip_data_columnsorvalue_check_columns =  config_dict['trip.metadata']['dq.columnsorvalue.compare'].split("|")
     (success_df_columnsorvalue_check, error_df_columnsorvalue_check) = transform.df_columns_compare(sparksession= spark, df = trip_data_typecasted, compare_expressions = trip_data_columnsorvalue_check_columns)
     
-    success_df_columnsorvalue_check.show(truncate = bool(False))
-    error_df_columnsorvalue_check.show(truncate = bool(False))
+    # Add additional columns (trip_date, trip_hour, trip_day_of_week)
+    df_with_additional_columns=success_df_columnsorvalue_check. \
+    withColumn("trip_date", f.to_date(f.col('pickup_datetime'), 'MM/dd/yyyy')). \
+    withColumn("trip_hour", f.hour(f.col('pickup_datetime'))). \
+    withColumn("trip_day_of_week", f.dayofweek(f.col('pickup_datetime')))    
+
+    error_df = error_df_negative_value_check.union(error_df_datetime_check).union(error_df_columnsorvalue_check)
+    
+    df_with_additional_columns.show(truncate = bool(False))
+    error_df.show(truncate = bool(False))
 
     quit()
     
