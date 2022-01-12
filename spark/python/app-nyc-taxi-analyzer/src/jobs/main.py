@@ -91,8 +91,20 @@ def jobs_main(spark: SparkSession, logger: Logger, config_file_path: str) -> Non
 
     # Replace T with negligible value (0.0001)
     weather_data_column_details = list(map(lambda x: x.split(":"), config_dict['weather.metadata']['columns'].split("|")))
-    x = transform.replace_T_with_negligible_values(df_weather_renamed, weather_data_column_details)
-    print("COUNT IS::" + str(x.count()))
+    df_weather_with_T_values_replaced = transform.replace_T_with_negligible_values(df_weather_renamed, weather_data_column_details)
+
+    # Typecast columns for weather data
+    weather_data_typecasted = transform.typecastcolumns(df_weather_with_T_values_replaced, weather_data_column_details)
+
+    # Data Quality check for weather data (Columns should not have negative value)
+    weather_data_negative_check_columns =  config_dict['weather.metadata']['dq.negativevaluecheck.columns'].split(",")
+    (success_df_negative_value_check, error_df_negative_value_check) = transform.filter_records_having_negative_value(sparksession= spark, df = weather_data_typecasted, column_names = weather_data_negative_check_columns)
+
+    # Data Quality check for columns to be compared with certain value or any column in dataframe
+    weather_data_columnsorvalue_check_columns =  config_dict['weather.metadata']['dq.columnsorvalue.compare'].split("|")
+    (success_df_columnsorvalue_check, error_df_columnsorvalue_check) = transform.df_columns_compare(sparksession= spark, df = success_df_negative_value_check, compare_expressions = weather_data_columnsorvalue_check_columns)
+    
+
 
     quit()
     # Typecast columns for weather data
