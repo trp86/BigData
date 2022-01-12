@@ -81,14 +81,20 @@ def jobs_main(spark: SparkSession, logger: Logger, config_file_path: str) -> Non
 
     error_df = error_df_negative_value_check.union(error_df_datetime_check).union(error_df_columnsorvalue_check)
     
-    df_with_additional_columns.show(truncate = bool(False))
-    error_df.show(truncate = bool(False))
+    # df_with_additional_columns.show(truncate = bool(False))
+    # error_df.show(truncate = bool(False))
 
-    quit()
+    
     
     # Change the date column to weather_date as date is a reserved keyword in
     df_weather_renamed = transform.rename_column_in_df(df_weather, "date", "weather_date")
 
+    # Replace T with negligible value (0.0001)
+    weather_data_column_details = list(map(lambda x: x.split(":"), config_dict['weather.metadata']['columns'].split("|")))
+    x = transform.replace_T_with_negligible_values(df_weather_renamed, weather_data_column_details)
+    print("COUNT IS::" + str(x.count()))
+
+    quit()
     # Typecast columns for weather data
     weather_data_column_details = list(map(lambda x: x.split(":"), config_dict['weather.metadata']['columns'].split("|")))
     list(map(lambda a: a==a.insert(2,"") if len(a) == 2 else a , weather_data_column_details))

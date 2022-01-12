@@ -192,6 +192,38 @@ def df_columns_compare(sparksession: SparkSession, df: DataFrame, compare_expres
 
     return (success_df, error_df)
 
+def replace_T_with_negligible_values(df: DataFrame, columns_with_data_type_details: list) -> DataFrame:
+
+    """
+    Typecasts the spark dataframe as per the data type and precesion if any
+
+    Args:
+        df (DataFrame): Spark DataFrame whose T is to be replaced with negligible values
+        columns_with_data_type_details (List[(str, str, str)]): List of tuples. Tuple have 3 elements. 0 -> Column Name, 1-> Column DataType, 2->Column Precision 
+    """
+
+    def replace_T(df: DataFrame, column_detail: tuple) -> DataFrame:
+        col_name = column_detail[0]
+        col_data_type = column_detail[1]
+
+        if col_data_type != "decimal" :
+            return df 
+
+        # Check if column exists in dataframe. If not then raise error
+        check_if_column_exists_in_df (df, [col_name])
+
+        return df.withColumn(col_name, when(col(col_name) == "T", "0.0001")
+                                       .otherwise(col(col_name)))
+
+    return functools.reduce(
+        # function
+        lambda accumulated_df, column_detail : replace_T(accumulated_df, column_detail),
+        # list
+        columns_with_data_type_details,
+        # initial or start point 
+        df
+    )    
+
 ##########
 def explode_df(df: DataFrame, input_col: str, output_col: str) -> DataFrame:
     """
