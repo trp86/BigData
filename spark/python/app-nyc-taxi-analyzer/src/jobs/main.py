@@ -7,7 +7,7 @@ from pyspark.sql import SparkSession, functions as f
 from pathlib import Path
 from typing import Generator
 
-from src.jobs import extract, transform, load
+from src.jobs import extract, transform,transform_weather_data, load
 from src.jobs.utils.general import *
 from src.jobs.utils.log_utils import Logger
 
@@ -104,10 +104,14 @@ def jobs_main(spark: SparkSession, logger: Logger, config_file_path: str) -> Non
     weather_data_columnsorvalue_check_columns =  config_dict['weather.metadata']['dq.columnsorvalue.compare'].split("|")
     (success_df_columnsorvalue_check, error_df_columnsorvalue_check) = transform.df_columns_compare(sparksession= spark, df = success_df_negative_value_check, compare_expressions = weather_data_columnsorvalue_check_columns)
 
+    # Add additional columns for weather data
+    df_weather_data_with_additional_columns = transform_weather_data.add_additional_columns(success_df_columnsorvalue_check)
+    df_weather_data_with_additional_columns.show(5)
 
-    error_df_trip_data = error_df_negative_value_check.union(error_df_columnsorvalue_check)
+
+    # error_df_trip_data = error_df_negative_value_check.union(error_df_columnsorvalue_check)
     # print ("COUNT::" + str(success_df_columnsorvalue_check.count()))
-    error_df_trip_data.show(truncate = bool(False))
+    # error_df_trip_data.show(truncate = bool(False))
 
     quit()
     # Typecast columns for weather data
