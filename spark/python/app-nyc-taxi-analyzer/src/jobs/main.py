@@ -79,7 +79,7 @@ def jobs_main(spark: SparkSession, logger: Logger, config_file_path: str) -> Non
     withColumn("trip_hour", f.hour(f.col('pickup_datetime'))). \
     withColumn("trip_day_of_week", f.dayofweek(f.col('pickup_datetime')))    
 
-    error_df = error_df_negative_value_check.union(error_df_datetime_check).union(error_df_columnsorvalue_check)
+    error_df_trip_data = error_df_negative_value_check.union(error_df_datetime_check).union(error_df_columnsorvalue_check)
     
     # df_with_additional_columns.show(truncate = bool(False))
     # error_df.show(truncate = bool(False))
@@ -89,7 +89,7 @@ def jobs_main(spark: SparkSession, logger: Logger, config_file_path: str) -> Non
     # Change the date column to weather_date as date is a reserved keyword in
     df_weather_renamed = transform.rename_column_in_df(df_weather, "date", "weather_date")
 
-    # Replace T with negligible value (0.0001)
+    # Replace with negligible value (0.0001)
     weather_data_column_details = list(map(lambda x: x.split(":"), config_dict['weather.metadata']['columns'].split("|")))
     df_weather_with_T_values_replaced = transform.replace_T_with_negligible_values(df_weather_renamed, weather_data_column_details)
 
@@ -103,8 +103,11 @@ def jobs_main(spark: SparkSession, logger: Logger, config_file_path: str) -> Non
     # Data Quality check for columns to be compared with certain value or any column in dataframe
     weather_data_columnsorvalue_check_columns =  config_dict['weather.metadata']['dq.columnsorvalue.compare'].split("|")
     (success_df_columnsorvalue_check, error_df_columnsorvalue_check) = transform.df_columns_compare(sparksession= spark, df = success_df_negative_value_check, compare_expressions = weather_data_columnsorvalue_check_columns)
-    
 
+
+    error_df_trip_data = error_df_negative_value_check.union(error_df_columnsorvalue_check)
+    # print ("COUNT::" + str(success_df_columnsorvalue_check.count()))
+    error_df_trip_data.show(truncate = bool(False))
 
     quit()
     # Typecast columns for weather data

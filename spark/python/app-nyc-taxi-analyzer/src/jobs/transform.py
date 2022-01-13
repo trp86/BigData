@@ -59,6 +59,8 @@ def typecastcolumns(df: DataFrame, columns_with_data_type_details: list) -> Data
         elif column_detail[1]  == "decimal":
             typecasted_df = df.withColumn(column_detail[0], col(column_detail[0]).cast(column_detail[1] + column_detail[2]))
         elif column_detail[1]  == "date":
+            ## for date converion got issue and URL: https://stackoverflow.com/questions/62943941/to-date-fails-to-parse-date-in-spark-3-0
+            ## and https://spark.apache.org/docs/latest/sql-ref-datetime-pattern.html helped to fix it.
             typecasted_df = df.withColumn(column_detail[0], to_date(col(column_detail[0]), column_detail[2]))    
 
         return typecasted_df
