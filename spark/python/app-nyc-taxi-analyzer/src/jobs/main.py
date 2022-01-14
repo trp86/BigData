@@ -62,12 +62,6 @@ def jobs_main(sparksession: SparkSession, logger: Logger, config_file_path: str)
     # Perform data quality and add additional columns for weather_data
     (df_weather_success, df_weather_error) = transform_weather_data.perform_dq_and_add_additional_columns(df_weather, config_dict, sparksession)
     
-    # df_trip_success.show(5, truncate=bool(False))
-    # df_trip_error.show(5, truncate=bool(False))
-
-    # df_weather_success.show(5, truncate=bool(False))
-    # df_weather_error.show(5, truncate=bool(False))
-
     # Left outer Join df_trip_success and df_weather_success
     # https://stackoverflow.com/questions/55240023/typeerror-dataframe-object-is-not-callable-spark-data-frame
     df_to_persist = df_trip_success.join(df_weather_success, df_trip_success["trip_date"] == df_weather_success["weather_date"], "left_outer")

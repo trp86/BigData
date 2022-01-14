@@ -226,7 +226,6 @@ def replace_T_with_negligible_values(df: DataFrame, columns_with_data_type_detai
         df
     )    
 
-##########
 def explode_df(df: DataFrame, input_col: str, output_col: str) -> DataFrame:
     """
     Explodes the input_column.
