@@ -8,8 +8,7 @@ from src.jobs.transform import check_if_column_exists_in_df
 
 
 def add_additional_columns(df: DataFrame) -> DataFrame : 
-    # return add_rain_condition_column(add_snowdepth_condition_column(add_snowfall_condition_column(add_temperature_condition_column(df))))
-    return add_temperature_condition_column(df)
+    return add_rain_condition_column(add_snowdepth_condition_column(add_snowfall_condition_column(add_temperature_condition_column(df))))
 
 
 def add_temperature_condition_column (df: DataFrame) -> DataFrame :
@@ -23,11 +22,11 @@ def add_temperature_condition_column (df: DataFrame) -> DataFrame :
     check_if_column_exists_in_df (df, ["averagetemperature"])
 
     df.printSchema()
-
+    # https://stackoverflow.com/questions/65732120/pyspark-py4j-py4jexception-method-andclass-java-lang-integer-does-not-exist
     return df.withColumn("temperature_condition", when(col("averagetemperature") < 32, "verycold")
-                                                .when(col("averagetemperature") >= 32 & col("averagetemperature") < 59, "cold")
-                                                .when(col("averagetemperature") >= 59 & col("averagetemperature") < 77, "normal")
-                                                .when(col("averagetemperature") >= 77 & col("averagetemperature") < 95, "hot")
+                                                .when((col("averagetemperature") >= 32) & (col("averagetemperature") < 59), "cold")
+                                                .when((col("averagetemperature") >= 59) & (col("averagetemperature") < 77), "normal")
+                                                .when((col("averagetemperature") >= 77) & (col("averagetemperature") < 95), "hot")
                                                 .otherwise("veryhot"))
 
 def add_snowfall_condition_column (df: DataFrame) -> DataFrame :
@@ -41,8 +40,8 @@ def add_snowfall_condition_column (df: DataFrame) -> DataFrame :
     check_if_column_exists_in_df (df, ["snowfall"])
 
     return df.withColumn("snowfall_condition", when(col("snowfall") <= 0.0001 , "nosnow")
-                                            .when(col("snowfall") >= 0.0001 & col("snowfall") < 4, "moderate")
-                                            .when(col("snowfall") >= 4 & col("snowfall") < 15, "heavy")
+                                            .when((col("snowfall") >= 0.0001) & (col("snowfall") < 4), "moderate")
+                                            .when((col("snowfall") >= 4) & (col("snowfall") < 15), "heavy")
                                             .otherwise("violent"))
 
 def add_snowdepth_condition_column (df: DataFrame) -> DataFrame :
@@ -56,8 +55,8 @@ def add_snowdepth_condition_column (df: DataFrame) -> DataFrame :
     check_if_column_exists_in_df (df, ["snowdepth"])
 
     return df.withColumn("snowdepth_condition", when(col("snowdepth") <= 0.0001 , "nosnow")
-                                            .when(col("snowdepth") >= 0.0001 & col("snowdepth") < 4, "moderate")
-                                            .when(col("snowdepth") >= 4 & col("snowdepth") < 15, "heavy")
+                                            .when((col("snowdepth") >= 0.0001) & (col("snowdepth") < 4), "moderate")
+                                            .when((col("snowdepth") >= 4) & (col("snowdepth") < 15), "heavy")
                                             .otherwise("violent"))
 
 def add_rain_condition_column (df: DataFrame) -> DataFrame :
@@ -71,6 +70,6 @@ def add_rain_condition_column (df: DataFrame) -> DataFrame :
     check_if_column_exists_in_df (df, ["precipitation"])
 
     return df.withColumn("rain_condition", when(col("precipitation") <= 0 , "norain")
-                                        .when(col("precipitation") > 0 & col("precipitation") < 0.3, "moderate")
-                                        .when(col("precipitation") >= 0.3 & col("precipitation") < 2, "heavy")
+                                        .when((col("precipitation") > 0) & (col("precipitation") < 0.3), "moderate")
+                                        .when((col("precipitation") >= 0.3) & (col("precipitation") < 2), "heavy")
                                         .otherwise("violent"))
