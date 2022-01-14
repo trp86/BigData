@@ -14,10 +14,10 @@ def main(
     ),
 ) -> None:
     """Execute main function for the package."""
-    with spark_build(env=env) as spark:
-        logger = log_utils.Logger(env=env, spark=spark)
+    with spark_build(env=env) as sparksession:
+        logger = log_utils.Logger(env=env, spark=sparksession)
         logger.info("Spark and logger initialized")
-        jobs_main(spark, logger, config_file_path=config_file_path) 
+        jobs_main(sparksession, logger, config_file_path=config_file_path) 
 
 
 if __name__ == "__main__":

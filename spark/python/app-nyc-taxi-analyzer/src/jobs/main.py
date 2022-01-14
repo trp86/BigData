@@ -6,18 +6,18 @@ import configparser
 from pyspark.sql import SparkSession, functions as f
 from pathlib import Path
 from typing import Generator
-
-from src.jobs import extract, transform,transform_weather_data, load
+from pyspark.sql import DataFrame
+from src.jobs import extract, transform,transform_weather_data, transform_trip_data, load
 from src.jobs.utils.general import *
 from src.jobs.utils.log_utils import Logger
 
 
-def jobs_main(spark: SparkSession, logger: Logger, config_file_path: str) -> None:
+def jobs_main(sparksession: SparkSession, logger: Logger, config_file_path: str) -> None:
     """
     High-level function to perform the ETL job.
 
     Args:
-        spark (SparkSession) : spark session to perform ETL job
+        sparksession (SparkSession) : spark session to perform ETL job
         logger (Logger) : logger class instance
         file_path (str): path on which the job will be performed
 
@@ -28,7 +28,7 @@ def jobs_main(spark: SparkSession, logger: Logger, config_file_path: str) -> Non
 
     # Create dataframe for trip data
     trip_data_file_path = config_file_path + "data/nyc_trip/"
-    df_trip = extract.extract_csv_file(spark, trip_data_file_path)
+    df_trip = extract.extract_csv_file(sparksession, trip_data_file_path)
     logger.info("Trip data " f"{trip_data_file_path} extracted to DataFrame")
 
     # Header Check for trip data
@@ -43,7 +43,7 @@ def jobs_main(spark: SparkSession, logger: Logger, config_file_path: str) -> Non
 
     # Create dataframe for weather data
     weather_data_file_path = config_file_path + "data/weather/"
-    df_weather = extract.extract_csv_file(spark, weather_data_file_path)
+    df_weather = extract.extract_csv_file(sparksession, weather_data_file_path)
     logger.info("Weather data" f"{weather_data_file_path} extracted to DataFrame")
 
     # Header Check for weather data
@@ -56,81 +56,27 @@ def jobs_main(spark: SparkSession, logger: Logger, config_file_path: str) -> Non
     if weather_data_header_match_status is bool(False):
         raise IOError("Mismatch in header for weather data.Please verify !!!!!")
  
-    # Data Quality check for trip data
+    # Perform data quality and add additional columns for trip_data
+    (df_trip_success, df_trip_error) = transform_trip_data.perform_dq_and_add_additional_columns(df_trip, config_dict, sparksession)
+
+    # Perform data quality and add additional columns for weather_data
+    (df_weather_success, df_weather_error) = transform_weather_data.perform_dq_and_add_additional_columns(df_weather, config_dict, sparksession)
     
-    # Filter records and put to error dataframe which is having a negative value
-    trip_data_negative_check_columns =  config_dict['trip.metadata']['dq.negativevaluecheck.columns'].split(",")
-    (success_df_negative_value_check, error_df_negative_value_check) = transform.filter_records_having_negative_value(sparksession= spark, df = df_trip, column_names = trip_data_negative_check_columns)
+    # df_trip_success.show(5, truncate=bool(False))
+    # df_trip_error.show(5, truncate=bool(False))
 
-    trip_data_datetimestamp_check_columns =  config_dict['trip.metadata']['dq.datetimestampformatcheck.columns'].split(",")
-    (success_df_datetime_check, error_df_datetime_check) = transform.filter_records_having_improper_datetime_value(sparksession= spark, df = success_df_negative_value_check, column_names = trip_data_datetimestamp_check_columns)
-    
-    # Typecast columns for trip data
-    trip_data_column_details = list(map(lambda x: x.split(":"), config_dict['trip.metadata']['columns'].split("|")))
-    list(map(lambda a: a==a.insert(2,"") if len(a) == 2 else a , trip_data_column_details))
-    trip_data_typecasted = transform.typecastcolumns(success_df_datetime_check, trip_data_column_details)
+    # df_weather_success.show(5, truncate=bool(False))
+    # df_weather_error.show(5, truncate=bool(False))
 
-    trip_data_columnsorvalue_check_columns =  config_dict['trip.metadata']['dq.columnsorvalue.compare'].split("|")
-    (success_df_columnsorvalue_check, error_df_columnsorvalue_check) = transform.df_columns_compare(sparksession= spark, df = trip_data_typecasted, compare_expressions = trip_data_columnsorvalue_check_columns)
-    
-    # Add additional columns (trip_date, trip_hour, trip_day_of_week)
-    df_with_additional_columns=success_df_columnsorvalue_check. \
-    withColumn("trip_date", f.to_date(f.col('pickup_datetime'), 'MM/dd/yyyy')). \
-    withColumn("trip_hour", f.hour(f.col('pickup_datetime'))). \
-    withColumn("trip_day_of_week", f.dayofweek(f.col('pickup_datetime')))    
-
-    error_df_trip_data = error_df_negative_value_check.union(error_df_datetime_check).union(error_df_columnsorvalue_check)
-    
-    # df_with_additional_columns.show(truncate = bool(False))
-    # error_df.show(truncate = bool(False))
-
-    
-    
-    # Change the date column to weather_date as date is a reserved keyword in
-    df_weather_renamed = transform.rename_column_in_df(df_weather, "date", "weather_date")
-
-    # Replace with negligible value (0.0001)
-    weather_data_column_details = list(map(lambda x: x.split(":"), config_dict['weather.metadata']['columns'].split("|")))
-    df_weather_with_T_values_replaced = transform.replace_T_with_negligible_values(df_weather_renamed, weather_data_column_details)
-
-    # Typecast columns for weather data
-    weather_data_typecasted = transform.typecastcolumns(df_weather_with_T_values_replaced, weather_data_column_details)
-
-    # Data Quality check for weather data (Columns should not have negative value)
-    weather_data_negative_check_columns =  config_dict['weather.metadata']['dq.negativevaluecheck.columns'].split(",")
-    (success_df_negative_value_check, error_df_negative_value_check) = transform.filter_records_having_negative_value(sparksession= spark, df = weather_data_typecasted, column_names = weather_data_negative_check_columns)
-
-    # Data Quality check for columns to be compared with certain value or any column in dataframe
-    weather_data_columnsorvalue_check_columns =  config_dict['weather.metadata']['dq.columnsorvalue.compare'].split("|")
-    (success_df_columnsorvalue_check, error_df_columnsorvalue_check) = transform.df_columns_compare(sparksession= spark, df = success_df_negative_value_check, compare_expressions = weather_data_columnsorvalue_check_columns)
-
-    # Add additional columns for weather data
-    df_weather_data_with_additional_columns = transform_weather_data.add_additional_columns(success_df_columnsorvalue_check)
-    df_weather_data_with_additional_columns.show(5)
-
-
-    # error_df_trip_data = error_df_negative_value_check.union(error_df_columnsorvalue_check)
-    # print ("COUNT::" + str(success_df_columnsorvalue_check.count()))
-    # error_df_trip_data.show(truncate = bool(False))
-
-    quit()
-    # Typecast columns for weather data
-    weather_data_column_details = list(map(lambda x: x.split(":"), config_dict['weather.metadata']['columns'].split("|")))
-    list(map(lambda a: a==a.insert(2,"") if len(a) == 2 else a , weather_data_column_details))
-
-    weather_data_typecasted = transform.typecastcolumns(df_weather_renamed, weather_data_column_details)
-    #weather_data_typecasted.printSchema()
-
+    # Left outer Join df_trip_success and df_weather_success
+    # https://stackoverflow.com/questions/55240023/typeerror-dataframe-object-is-not-callable-spark-data-frame
+    df_to_persist = df_trip_success.join(df_weather_success, df_trip_success["trip_date"] == df_weather_success["weather_date"], "left_outer")
    
-
-   # df_trip.printSchema()
-
-   # t = transform.filter_records_having_negative_value(sparksession= spark, df = df_trip, column_names = ["passenger_count", "trip_distance"])
-
- #   t [0].show(2)
-   # t [1].show(20)
-    # df_weather_renamed.show(20)
-    # df_trip.show(20)    
+    df_to_persist.show(5, truncate=bool(False))
+    
+    load.write_to_path(df_to_persist, config_dict['processed.metadata']['processed.data.success.path'])
+    load.write_to_path(df_trip_error, config_dict['processed.metadata']['trip.data.error.path'])
+    load.write_to_path(df_weather_error, config_dict['processed.metadata']['weather.data.error.path'])
      
     """count_df = transform.transform_df(df)
     logger.info("Counted words in the DataFrame")
@@ -155,10 +101,10 @@ def spark_build(env: EnvEnum) -> Generator[SparkSession, None, None]:
     app_name = Path(__file__).parent.name
 
     if env == EnvEnum.dev:
-        spark = spark_builder.appName(app_name).getOrCreate()
+        sparksession = spark_builder.appName(app_name).getOrCreate()
     else:
         raise NotImplementedError
     try:
-        yield spark
+        yield sparksession
     finally:
-        spark.stop()
+        sparksession.stop()
