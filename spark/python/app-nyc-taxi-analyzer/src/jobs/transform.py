@@ -14,8 +14,7 @@ def check_if_column_exists_in_df(df: DataFrame, column_list_to_be_checked: list)
 
     Args:
         df (DataFrame): Spark DataFrame to  check if column exists
-        column_list_to_be_checked (list): List of column names to be checked   
-    
+        column_list_to_be_checked (list): List of column names to be checked
     """
     columns_present_in_df = df.columns
     columns_not_present_in_df = list(set(column_list_to_be_checked) - set(columns_present_in_df))
@@ -54,14 +53,18 @@ def typecastcolumns(df: DataFrame, columns_with_data_type_details: list) -> Data
         data_types_dict = {'int' : IntegerType(), 'double': DoubleType(), 'string' : StringType(), 'datetime' : TimestampType(), 'decimal': DecimalType() }
         typecasted_df = None
 
-        if column_detail[2]  == "":
+        if column_detail[1]  == "string" or column_detail[1]  == "int" or column_detail[1]  == "double" or column_detail[1]  == "datetime":
             typecasted_df = df.withColumn(column_detail[0], col(column_detail[0]).cast(data_types_dict.get(column_detail[1])))
         elif column_detail[1]  == "decimal":
             typecasted_df = df.withColumn(column_detail[0], col(column_detail[0]).cast(column_detail[1] + column_detail[2]))
         elif column_detail[1]  == "date":
             ## for date converion got issue and URL: https://stackoverflow.com/questions/62943941/to-date-fails-to-parse-date-in-spark-3-0
             ## and https://spark.apache.org/docs/latest/sql-ref-datetime-pattern.html helped to fix it.
-            typecasted_df = df.withColumn(column_detail[0], to_date(col(column_detail[0]), column_detail[2]))    
+            typecasted_df = df.withColumn(column_detail[0], to_date(col(column_detail[0]), column_detail[2]))
+        else :
+            # Raise exception if wrong data type is provided
+            raise Exception("Unsupported data type for typecasting " + column_detail[1] )
+
 
         return typecasted_df
 
