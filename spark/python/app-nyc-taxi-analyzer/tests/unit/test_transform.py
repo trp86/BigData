@@ -1,6 +1,6 @@
 """Testcases for transform.py file."""
 
-from os import error
+from os import error, truncate
 from src.jobs.utils.general import *
 import pytest
 from pyspark.sql import SparkSession
@@ -130,7 +130,81 @@ def test_typecastcolumns_should_throw_exception_if_unsupported_datatype_provided
     with pytest.raises(Exception) as execinfo:
        transform.typecastcolumns(input_df, some_column_details)
 
-    print(str(execinfo.value))   
-
     # then
     assert str(execinfo.value) == """Unsupported data type for typecasting randomdatatype"""
+
+@pytest.mark.filterrecordshavingnegativevalue 
+#when filterrecordshavingnegativevalue function is invoked
+def test_filterrecordshavingnegativevalue_should_filter_out_records_having_negative_value(init):
+    # given
+    test_spark_session = init [1]
+    test_spark_context = test_spark_session.sparkContext
+    input_schema = StructType([
+        StructField("vendor_id", StringType(), True),
+        StructField("total_cust", IntegerType(), True),
+        StructField("fare", DoubleType(), True)])
+
+    expected_error_schema = StructType([
+        StructField("vendor_id", StringType(), True),
+        StructField("total_cust", IntegerType(), True),
+        StructField("fare", DoubleType(), True),
+        StructField("rejectreason", StringType(), False)])    
+
+    input_df = test_spark_session.createDataFrame(test_spark_context.parallelize([
+       Row("CMT", 2, 2.5), 
+       Row("CMT", -1, -2.5), 
+       Row("CMT", 4, -2.5), 
+       Row("CMT", -1, 5.5), 
+       Row("CMT", 0, 6.4), 
+       Row("CMT", 1, 0.0)]), input_schema)
+
+    column_names_for_negative_value_check = ["total_cust", "fare"]       
+   
+    # when
+    (actual_success_df, actual_error_df) = transform.filter_records_having_negative_value(test_spark_session, input_df, column_names_for_negative_value_check)
+
+    # then
+    expected_success_df = test_spark_session.createDataFrame(test_spark_context.parallelize([
+       Row("CMT", 2, 2.5),
+       Row("CMT", 0, 6.4), 
+       Row("CMT", 1, 0.0)]), input_schema)
+
+    expected_error_df = test_spark_session.createDataFrame(test_spark_context.parallelize([
+       Row("CMT", -1, -2.5, "total_cust is negative"),
+       Row("CMT", -1, -5.5, "total_cust is negative"),
+       Row("CMT", -1, -2.5, "fare is negative"),
+       Row("CMT", 4, -2.5, "fare is negative")]), expected_error_schema)
+
+    assert actual_success_df.collect() == expected_success_df.collect()
+    assert actual_error_df.schema == expected_error_df.schema
+
+@pytest.mark.filterrecordshavingnegativevalue
+# when filterrecordshavingnegativevalue function is invoked should throw exception if column is not present
+def test_filterrecordshavingnegativevalue_should_throw_exception_if_column_is_not_present(init):
+    # given
+    test_spark_session = init [1]
+    test_spark_context = test_spark_session.sparkContext
+    input_schema = StructType([
+        StructField("vendor_id", StringType(), True),
+        StructField("total_cust", StringType(), True),
+        StructField("fare", StringType(), True),
+        StructField("maximumtemperature", StringType(), True),
+        StructField("pickup_datetime", StringType(), True),
+        StructField("weather_date", StringType(), True)])
+
+    input_df = test_spark_session.createDataFrame(test_spark_context.parallelize([
+       Row("CMT", 2, 2.5), 
+       Row("CMT", -1, -2.5), 
+       Row("CMT", 4, -2.5), 
+       Row("CMT", -1, 5.5), 
+       Row("CMT", 0, 6.4), 
+       Row("CMT", 1, 0.0)]), input_schema) 
+
+    column_names_for_negative_value_check = ["total_cust", "fare", "trip_distance", "start_time"]         
+   
+   # when
+    with pytest.raises(Exception) as execinfo:
+       transform.filter_records_having_negative_value(test_spark_session, input_df, column_names_for_negative_value_check)
+
+    # then
+    assert str(execinfo.value) == """Columns not present in dataframe::- ['start_time', 'trip_distance']"""   

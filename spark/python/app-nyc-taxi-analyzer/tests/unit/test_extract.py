@@ -1,7 +1,7 @@
 """Testcases for extract.py file."""
 
 from os import error
-from src.jobs.utils.general import LibCommons
+from src.jobs.utils.general import *
 import pytest
 from pyspark.sql import SparkSession
 from pathlib import Path
@@ -12,8 +12,7 @@ import pathlib
 def init():
     app_name = "test_" + Path(__file__).parent.name
     test_spark_session = SparkSession.builder.appName(app_name).getOrCreate()
-    libCommons = LibCommons(sparkSession=test_spark_session)
-    return libCommons, test_spark_session
+    return test_spark_session
 
 @pytest.mark.extract_csv_file
 def test_true_condition_extract_csv_file(init):
