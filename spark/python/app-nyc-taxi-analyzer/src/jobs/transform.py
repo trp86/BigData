@@ -127,7 +127,7 @@ def filter_records_having_improper_datetime_value(sparksession: SparkSession, df
 
     # Create empty dataframe with schema present in input dataframe along with additional column rejectReason
     empty_df: DataFrame = sparksession.createDataFrame(sparksession.sparkContext.emptyRDD(), df.schema).withColumn("rejectreason" , lit(""))
-
+    
     # Error DataFrame
     error_df: DataFrame = functools.reduce(
         # function
