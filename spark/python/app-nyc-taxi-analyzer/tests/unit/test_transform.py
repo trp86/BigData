@@ -209,3 +209,73 @@ def test_filterrecordshavingnegativevalue_should_throw_exception_if_column_is_no
 
     # ASSERT
     assert ( str(execinfo.value) == """Columns not present in dataframe::- ['trip_distance', 'start_time']"""  or  str(execinfo.value) == """Columns not present in dataframe::- ['start_time', 'trip_distance']""")
+
+
+@pytest.mark.filter_records_having_improper_datetime_value
+#when filter_records_having_improper_datetime_value function is invoked it should filter out the records 
+#having improper datetime value and return back success & error dataframe
+def test_filter_records_having_improper_datetime_value_should_filterout_having_improper_datetime_value(init):
+    # ASSEMBLE
+    test_spark_session = init [1]
+    test_spark_context = test_spark_session.sparkContext
+    input_schema = StructType([
+        StructField("vendor_id", StringType(), True),
+        StructField("pickup_datetime", StringType(), True),
+        StructField("dropoff_datetime", StringType(), True)])
+
+    expected_error_schema = StructType([
+        StructField("vendor_id", StringType(), True),
+        StructField("pickup_datetime", StringType(), True),
+        StructField("dropoff_datetime", StringType(), True),
+        StructField("rejectreason", StringType(), False)])    
+
+    input_df = test_spark_session.createDataFrame(test_spark_context.parallelize([
+       Row("CMT", "2014-01-09 20:45:25", "2014-01-09 20:52:31"), 
+       Row("CMT", "-014-01-09 20:45:25", "2014-01-09 20:52:31"), 
+       Row("CMT", "2014-01-09 20:45:25", "2333d4-01-09 20:52:31"), 
+       Row("CMT", "cdef-01-09 20:45:25", "2333d4-01-09 20:52:31")]), input_schema)
+
+    column_names_for_improper_datetime_check = ["pickup_datetime", "dropoff_datetime"]
+
+    expected_success_df = test_spark_session.createDataFrame(test_spark_context.parallelize([
+       Row("CMT", "2014-01-09 20:45:25", "2014-01-09 20:52:31")]), input_schema)
+
+    expected_error_df = test_spark_session.createDataFrame(test_spark_context.parallelize([
+       Row("CMT", "-014-01-09 20:45:25", "2014-01-09 20:52:31", "pickup_datetime datetime format is incorrect"),
+       Row("CMT", "cdef-01-09 20:45:25", "2333d4-01-09 20:52:31", "pickup_datetime datetime format is incorrect"),
+       Row("CMT", "2014-01-09 20:45:25", "2333d4-01-09 20:52:31", "dropoff_datetime datetime format is incorrect"),
+       Row("CMT", "cdef-01-09 20:45:25", "2333d4-01-09 20:52:31", "dropoff_datetime datetime format is incorrect")]), expected_error_schema).orderBy(['vendor_id', 'pickup_datetime', 'dropoff_datetime', 'rejectreason'], ascending=True)
+   
+   
+    # ACT
+    (actual_success_df, actual_error_df) = transform.filter_records_having_improper_datetime_value(test_spark_session, input_df, column_names_for_improper_datetime_check)
+
+    # ASSERT
+    pd.testing.assert_frame_equal(left=expected_success_df.toPandas(),right=actual_success_df.toPandas(),check_exact=True )
+    pd.testing.assert_frame_equal(left=expected_error_df.toPandas(),right=actual_error_df.orderBy(['vendor_id', 'pickup_datetime', 'dropoff_datetime', 'rejectreason'], ascending=True).toPandas(), check_exact=True )
+
+@pytest.mark.filter_records_having_improper_datetime_value
+# when filterrecordshavingnegativevalue function is invoked should throw exception if column is not present
+def test_filter_records_having_improper_datetime_value_should_throw_exception_if_column_is_not_present(init):
+    # ASSEMBLE
+    test_spark_session = init [1]
+    test_spark_context = test_spark_session.sparkContext
+    input_schema = StructType([
+        StructField("vendor_id", StringType(), True),
+        StructField("pickup_datetime", StringType(), True),
+        StructField("dropoff_datetime", StringType(), True)])
+
+    input_df = test_spark_session.createDataFrame(test_spark_context.parallelize([
+       Row("CMT", "2014-01-09 20:45:25", "2014-01-09 20:52:31"), 
+       Row("CMT", "-014-01-09 20:45:25", "2014-01-09 20:52:31"), 
+       Row("CMT", "2014-01-09 20:45:25", "2333d4-01-09 20:52:31"), 
+       Row("CMT", "cdef-01-09 20:45:25", "2333d4-01-09 20:52:31")]), input_schema)
+
+    column_names_for_improper_datetime_check = ["start_date", "pickup_datetime", "end_date", "dropoff_datetime"]
+
+   # ACT
+    with pytest.raises(Exception) as execinfo:
+       transform.filter_records_having_improper_datetime_value(test_spark_session, input_df, column_names_for_improper_datetime_check)
+
+    # ASSERT
+    assert ( str(execinfo.value) == """Columns not present in dataframe::- ['end_date', 'start_date']"""  or  str(execinfo.value) == """Columns not present in dataframe::- ['start_date', 'end_date']""")

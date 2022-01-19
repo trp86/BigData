@@ -133,7 +133,7 @@ def filter_records_having_improper_datetime_value(sparksession: SparkSession, df
         # function
         lambda accumulated_df, column_name : accumulated_df.
         union(
-            df.withColumn("timestamp_typecasted" , to_timestamp(col(column_name), "yyyy-MM-dd HH:mm:ss")).filter(col("timestamp_typecasted").isNull()).drop(col("timestamp_typecasted")).withColumn("rejectreason" , lit(column_name + " datetime format is invalid"))
+            df.withColumn("timestamp_typecasted" , to_timestamp(col(column_name), "yyyy-MM-dd HH:mm:ss")).filter(col("timestamp_typecasted").isNull()).drop(col("timestamp_typecasted")).withColumn("rejectreason" , lit(column_name + " datetime format is incorrect"))
         ),
         # list
         column_names,
