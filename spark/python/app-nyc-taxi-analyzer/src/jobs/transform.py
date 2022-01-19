@@ -183,8 +183,10 @@ def df_columns_compare(sparksession: SparkSession, df: DataFrame, compare_expres
         compare_expressions,
         # initial or start point 
         empty_df
-    ) 
-
+    )
+    #convert all columns of error dataframe to string
+    error_df = error_df.select([error_df[c].cast('string').alias(c) for c in error_df.columns])
+    
     # Success dataframe
     success_df: DataFrame = functools.reduce(
         # function
@@ -194,7 +196,7 @@ def df_columns_compare(sparksession: SparkSession, df: DataFrame, compare_expres
         # initial or start point 
         df
     ) 
-
+     
     return (success_df, error_df)
 
 def replace_T_with_negligible_values(df: DataFrame, columns_with_data_type_details: list) -> DataFrame:

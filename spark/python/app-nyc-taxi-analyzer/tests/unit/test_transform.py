@@ -9,6 +9,7 @@ from src.jobs import transform
 from pyspark.sql.types import *
 from pyspark.sql import Row 
 import pandas as pd
+from pyspark.sql.functions import col
 
 @pytest.fixture
 def init():
@@ -279,3 +280,53 @@ def test_filter_records_having_improper_datetime_value_should_throw_exception_if
 
     # ASSERT
     assert ( str(execinfo.value) == """Columns not present in dataframe::- ['end_date', 'start_date']"""  or  str(execinfo.value) == """Columns not present in dataframe::- ['start_date', 'end_date']""")
+
+@pytest.mark.df_columns_compare
+#when df_columns_compare function is invoked 
+#it should return success dataframe which matches the compare expression & error dataframe where the compare expression fails
+def test_df_columns_compare_should_filter_out_records_which_doesnot_match_compare_expression(init):
+    # ASSEMBLE
+    test_spark_session = init [1]
+    test_spark_context = test_spark_session.sparkContext
+    input_schema = StructType([
+        StructField("vendor_id", StringType(), True),
+        StructField("pickup_datetime", StringType(), True),
+        StructField("dropoff_datetime", StringType(), True),
+        StructField("trip_distance", StringType(), True)])
+
+    expected_error_schema = StructType([
+        StructField("vendor_id", StringType(), True),
+        StructField("pickup_datetime", StringType(), True),
+        StructField("dropoff_datetime", StringType(), True),
+        StructField("trip_distance", StringType(), True),
+        StructField("rejectreason", StringType(), False)])     
+
+    input_df = test_spark_session.createDataFrame(test_spark_context.parallelize([
+       Row("CMT", "2014-01-09 20:45:25", "2014-01-09 20:52:31", "20"), 
+       Row("CMT", "2014-01-09 22:45:25", "2014-01-09 20:52:31", "20"), 
+       Row("CMT", "2014-01-09 20:45:25", "2014-01-09 20:52:31", "120"), 
+       Row("CMT", "2014-01-09 20:45:25", "2014-01-09 11:52:31", "200")]), input_schema) \
+       .withColumn("pickup_datetime",col("pickup_datetime").cast(TimestampType())) \
+       .withColumn("dropoff_datetime",col("dropoff_datetime").cast(TimestampType())) \
+       .withColumn("trip_distance",col("trip_distance").cast(DoubleType()))
+
+    expected_success_df = test_spark_session.createDataFrame(test_spark_context.parallelize([
+       Row("CMT", "2014-01-09 20:45:25", "2014-01-09 20:52:31", "20")]), input_schema) \
+       .withColumn("pickup_datetime",col("pickup_datetime").cast(TimestampType())) \
+       .withColumn("dropoff_datetime",col("dropoff_datetime").cast(TimestampType())) \
+       .withColumn("trip_distance",col("trip_distance").cast(DoubleType())) 
+
+    expected_error_df = test_spark_session.createDataFrame(test_spark_context.parallelize([
+       Row("CMT", "2014-01-09 22:45:25", "2014-01-09 20:52:31", "20.0", "pickup_datetime is not < dropoff_datetime"),
+       Row("CMT", "2014-01-09 20:45:25", "2014-01-09 11:52:31", "200.0", "pickup_datetime is not < dropoff_datetime"),
+       Row("CMT", "2014-01-09 20:45:25", "2014-01-09 20:52:31", "120.0", "trip_distance is not <= 100"),
+       Row("CMT", "2014-01-09 20:45:25", "2014-01-09 11:52:31", "200.0", "trip_distance is not <= 100")]), expected_error_schema).orderBy(['vendor_id', 'pickup_datetime', 'dropoff_datetime', 'trip_distance', 'rejectreason'], ascending=True)        
+
+    compare_expressions = ["""pickup_datetime < dropoff_datetime""", """trip_distance <= 100"""]
+
+    # ACT
+    (actual_success_df, actual_error_df) = transform.df_columns_compare(test_spark_session, input_df, compare_expressions)
+
+    # ASSERT
+    pd.testing.assert_frame_equal(left=expected_success_df.toPandas(),right=actual_success_df.toPandas(),check_exact=True )
+    pd.testing.assert_frame_equal(left=expected_error_df.toPandas(),right=actual_error_df.orderBy(['vendor_id', 'pickup_datetime', 'dropoff_datetime','trip_distance', 'rejectreason'], ascending=True).toPandas(), check_exact=True )
