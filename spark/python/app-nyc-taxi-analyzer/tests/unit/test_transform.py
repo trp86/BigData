@@ -392,3 +392,56 @@ def test_df_columns_compare_should_throw_exception_if_invalid_comparision_operat
 
     # ASSERT
     assert str(execinfo.value) == """Invalid comparison operator!!!!"""
+
+
+@pytest.mark.replace_T_with_negligible_values
+#when replace_T_with_negligible_values function is invoked 
+#should replace T with 0.0001 in input dataframe columns having data type as decimal
+def test_filter_records_having_improper_datetime_value_should_filterout_having_improper_datetime_value(init):
+    # ASSEMBLE
+    test_spark_session = init [1]
+    test_spark_context = test_spark_session.sparkContext
+    input_schema = StructType([
+        StructField("snowdepth", StringType(), True),
+        StructField("weathertype", StringType(), True)])
+
+    input_df = test_spark_session.createDataFrame(test_spark_context.parallelize([
+       Row("T", "medium"), 
+       Row("0.5000", "violent")]), input_schema)    
+
+    expected_df = test_spark_session.createDataFrame(test_spark_context.parallelize([
+       Row("0.0001", "medium"), 
+       Row("0.5000", "violent")]), input_schema) 
+
+    column_details = [("snowdepth", "decimal", "(14,4)"), ("weathertype", "string", "")]
+
+    # ACT
+    actual_df = transform.replace_T_with_negligible_values(input_df, column_details)
+
+    # ASSERT
+    pd.testing.assert_frame_equal(left=expected_df.toPandas(),right=actual_df.orderBy(['snowdepth', 'weathertype'], ascending=True).toPandas(),check_exact=True )
+
+
+@pytest.mark.replace_T_with_negligible_values
+#when replace_T_with_negligible_values function is invoked
+#it should throw exception if some column is not present in dataframe
+def test_replace_T_with_negligible_values_should_throw_exception_if_column_is_not_present(init):
+    # ASSEMBLE
+    test_spark_session = init [1]
+    test_spark_context = test_spark_session.sparkContext
+    input_schema = StructType([
+        StructField("snowdepth", StringType(), True),
+        StructField("weathertype", StringType(), True)])
+
+    input_df = test_spark_session.createDataFrame(test_spark_context.parallelize([
+       Row("T", "medium"), 
+       Row("0.5000", "violent")]), input_schema)    
+
+    column_details = [("raindepth", "decimal", "(14,4)"), ("weathertype", "string", "")]
+
+    # ACT
+    with pytest.raises(Exception) as execinfo:
+       transform.replace_T_with_negligible_values(input_df, column_details)
+
+    # ASSERT
+    assert str(execinfo.value) == """Columns not present in dataframe::- ['raindepth']"""
