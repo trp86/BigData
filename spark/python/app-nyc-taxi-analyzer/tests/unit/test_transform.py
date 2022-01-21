@@ -330,3 +330,65 @@ def test_df_columns_compare_should_filter_out_records_which_doesnot_match_compar
     # ASSERT
     pd.testing.assert_frame_equal(left=expected_success_df.toPandas(),right=actual_success_df.toPandas(),check_exact=True )
     pd.testing.assert_frame_equal(left=expected_error_df.toPandas(),right=actual_error_df.orderBy(['vendor_id', 'pickup_datetime', 'dropoff_datetime','trip_distance', 'rejectreason'], ascending=True).toPandas(), check_exact=True )
+
+@pytest.mark.df_columns_compare
+#when df_columns_compare function is invoked 
+#it should throw exception if a string column has comparision operator apart from = and !=
+def test_df_columns_compare_should_throw_exception_if_string_column_has_comparision_operator(init):
+    # ASSEMBLE
+    test_spark_session = init [1]
+    test_spark_context = test_spark_session.sparkContext
+    input_schema = StructType([
+        StructField("vendor_id", StringType(), True),
+        StructField("pickup_datetime", StringType(), True),
+        StructField("dropoff_datetime", StringType(), True),
+        StructField("trip_distance", StringType(), True)])
+
+    input_df = test_spark_session.createDataFrame(test_spark_context.parallelize([
+       Row("CMT", "2014-01-09 20:45:25", "2014-01-09 20:52:31", "20"), 
+       Row("CMT", "2014-01-09 22:45:25", "2014-01-09 20:52:31", "20"), 
+       Row("CMT", "2014-01-09 20:45:25", "2014-01-09 20:52:31", "120"), 
+       Row("CMT", "2014-01-09 20:45:25", "2014-01-09 11:52:31", "200")]), input_schema) \
+       .withColumn("pickup_datetime",col("pickup_datetime").cast(TimestampType())) \
+       .withColumn("dropoff_datetime",col("dropoff_datetime").cast(TimestampType())) \
+       .withColumn("trip_distance",col("trip_distance").cast(DoubleType()))
+
+    compare_expressions = ["""vendor_id < dropoff_datetime""", """trip_distance <= 100"""]
+
+    # ACT
+    with pytest.raises(Exception) as execinfo:
+       transform.df_columns_compare(test_spark_session, input_df, compare_expressions)
+
+    # ASSERT
+    assert str(execinfo.value) == """For string datatype compare operator could only be = and !="""
+
+@pytest.mark.df_columns_compare
+#when df_columns_compare function is invoked 
+#it "should throw exception if comparision operator is apart from =,!=,>,<,>=,<=
+def test_df_columns_compare_should_throw_exception_if_invalid_comparision_operator_is_used(init):
+    # ASSEMBLE
+    test_spark_session = init [1]
+    test_spark_context = test_spark_session.sparkContext
+    input_schema = StructType([
+        StructField("vendor_id", StringType(), True),
+        StructField("pickup_datetime", StringType(), True),
+        StructField("dropoff_datetime", StringType(), True),
+        StructField("trip_distance", StringType(), True)])
+
+    input_df = test_spark_session.createDataFrame(test_spark_context.parallelize([
+       Row("CMT", "2014-01-09 20:45:25", "2014-01-09 20:52:31", "20"), 
+       Row("CMT", "2014-01-09 22:45:25", "2014-01-09 20:52:31", "20"), 
+       Row("CMT", "2014-01-09 20:45:25", "2014-01-09 20:52:31", "120"), 
+       Row("CMT", "2014-01-09 20:45:25", "2014-01-09 11:52:31", "200")]), input_schema) \
+       .withColumn("pickup_datetime",col("pickup_datetime").cast(TimestampType())) \
+       .withColumn("dropoff_datetime",col("dropoff_datetime").cast(TimestampType())) \
+       .withColumn("trip_distance",col("trip_distance").cast(DoubleType()))
+
+    compare_expressions = ["""pickup_datetime < dropoff_datetime""", """trip_distance && 100"""]
+
+    # ACT
+    with pytest.raises(Exception) as execinfo:
+       transform.df_columns_compare(test_spark_session, input_df, compare_expressions)
+
+    # ASSERT
+    assert str(execinfo.value) == """Invalid comparison operator!!!!"""

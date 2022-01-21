@@ -166,8 +166,12 @@ def df_columns_compare(sparksession: SparkSession, df: DataFrame, compare_expres
         col_data_type = df.select(col_name).dtypes [0] [1]
 
         # For String datatypes compare operator can be only (=, !=)
-        if (col_data_type.casefold == "string".casefold and (compare_operator != "=" or compare_operator != "!=" )):
-            raise ("For string datatype compare operator could only be = and !=")
+        if (col_data_type == "string" and (compare_operator != "=" or compare_operator != "!=" )):
+            raise Exception("For string datatype compare operator could only be = and !=")
+
+        # should throw exception if comparision operator is apart from =,!=,>,<,>=,<=
+        if not (compare_operator == "=" or compare_operator == "!=" or compare_operator == ">" or compare_operator == "<" or compare_operator == ">=" or compare_operator == "<="):
+            raise Exception("Invalid comparison operator!!!!")     
 
         compare_expr = col_name.strip() + " " + compare_operator.strip() + " " + value_or_col_tobe_compared.strip()
         return df.filter(expr(compare_expr)) if success_or_error else df.filter(~ expr(compare_expr)).withColumn("rejectreason", lit(col_name + " is not " + compare_operator + " " + value_or_col_tobe_compared))
