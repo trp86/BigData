@@ -7,6 +7,17 @@ import functools
 from pyspark.sql.types import *
 
 
+def create_empty_df(df: DataFrame) -> DataFrame:
+    """
+    Creates an empty dataframe 
+
+    Args:
+        df (DataFrame): Spark DataFrame to  check if column exists
+        column_list_to_be_checked (list): List of column names to be checked
+    """
+    return df.limit(1).filter("false").withColumn("rejectreason" , lit(""))
+
+
 def check_if_column_exists_in_df(df: DataFrame, column_list_to_be_checked: list) -> None:
 
     """
@@ -78,7 +89,7 @@ def typecastcolumns(df: DataFrame, columns_with_data_type_details: list) -> Data
         )
 
     
-def filter_records_having_negative_value(sparksession: SparkSession, df: DataFrame, column_names: list) -> tuple:
+def filter_records_having_negative_value(df: DataFrame, column_names: list) -> tuple:
     """
     Filter out the records where negative values are not accepted and create an error dataframe with a reason
 
@@ -90,7 +101,7 @@ def filter_records_having_negative_value(sparksession: SparkSession, df: DataFra
     check_if_column_exists_in_df (df, column_names)
 
     # Create empty dataframe with schema present in input dataframe along with additional column rejectReason
-    empty_df: DataFrame = sparksession.createDataFrame(sparksession.sparkContext.emptyRDD(), df.schema).withColumn("rejectreason" , lit(""))
+    empty_df: DataFrame = create_empty_df(df)
 
     # Error DataFrame
     error_df: DataFrame = functools.reduce(
@@ -115,7 +126,7 @@ def filter_records_having_negative_value(sparksession: SparkSession, df: DataFra
     return (success_df, error_df)
     
 
-def filter_records_having_improper_datetime_value(sparksession: SparkSession, df: DataFrame, column_names: list) -> tuple:
+def filter_records_having_improper_datetime_value(df: DataFrame, column_names: list) -> tuple:
     """
     Filter out the records where datetime value is improper
     Args:
@@ -126,7 +137,7 @@ def filter_records_having_improper_datetime_value(sparksession: SparkSession, df
     check_if_column_exists_in_df (df, column_names)
 
     # Create empty dataframe with schema present in input dataframe along with additional column rejectReason
-    empty_df: DataFrame = sparksession.createDataFrame(sparksession.sparkContext.emptyRDD(), df.schema).withColumn("rejectreason" , lit(""))
+    empty_df: DataFrame = create_empty_df(df)
     
     # Error DataFrame
     error_df: DataFrame = functools.reduce(
@@ -156,7 +167,7 @@ def filter_records_having_improper_datetime_value(sparksession: SparkSession, df
 
     return (success_df, error_df) 
 
-def df_columns_compare(sparksession: SparkSession, df: DataFrame, compare_expressions: list) -> tuple:
+def df_columns_compare(df: DataFrame, compare_expressions: list) -> tuple:
 
     def column_compare(df: DataFrame, compare_expr: str, success_or_error: bool) -> DataFrame:
         compare_expr_list = compare_expr.split(""" """)
@@ -177,7 +188,7 @@ def df_columns_compare(sparksession: SparkSession, df: DataFrame, compare_expres
         return df.filter(expr(compare_expr)) if success_or_error else df.filter(~ expr(compare_expr)).withColumn("rejectreason", lit(col_name + " is not " + compare_operator + " " + value_or_col_tobe_compared))
             
     # Create empty dataframe with schema present in input dataframe along with additional column rejectReason
-    empty_df: DataFrame = sparksession.createDataFrame(sparksession.sparkContext.emptyRDD(), df.schema).withColumn("rejectreason" , lit(""))
+    empty_df: DataFrame = create_empty_df(df)
 
     # Error dataframe
     error_df: DataFrame = functools.reduce(

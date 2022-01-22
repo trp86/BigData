@@ -163,7 +163,7 @@ def test_filterrecordshavingnegativevalue_should_filter_out_records_having_negat
     column_names_for_negative_value_check = ["total_cust", "fare"]       
    
     # ACT
-    (actual_success_df, actual_error_df) = transform.filter_records_having_negative_value(test_spark_session, input_df, column_names_for_negative_value_check)
+    (actual_success_df, actual_error_df) = transform.filter_records_having_negative_value(input_df, column_names_for_negative_value_check)
 
     # ASSERT
     expected_success_df = test_spark_session.createDataFrame(test_spark_context.parallelize([
@@ -206,7 +206,7 @@ def test_filterrecordshavingnegativevalue_should_throw_exception_if_column_is_no
    
    # ACT
     with pytest.raises(Exception) as execinfo:
-       transform.filter_records_having_negative_value(test_spark_session, input_df, column_names_for_negative_value_check)
+       transform.filter_records_having_negative_value(input_df, column_names_for_negative_value_check)
 
     # ASSERT
     assert ( str(execinfo.value) == """Columns not present in dataframe::- ['trip_distance', 'start_time']"""  or  str(execinfo.value) == """Columns not present in dataframe::- ['start_time', 'trip_distance']""")
@@ -249,7 +249,7 @@ def test_filter_records_having_improper_datetime_value_should_filterout_having_i
    
    
     # ACT
-    (actual_success_df, actual_error_df) = transform.filter_records_having_improper_datetime_value(test_spark_session, input_df, column_names_for_improper_datetime_check)
+    (actual_success_df, actual_error_df) = transform.filter_records_having_improper_datetime_value(input_df, column_names_for_improper_datetime_check)
 
     # ASSERT
     pd.testing.assert_frame_equal(left=expected_success_df.toPandas(),right=actual_success_df.toPandas(),check_exact=True )
@@ -276,7 +276,7 @@ def test_filter_records_having_improper_datetime_value_should_throw_exception_if
 
    # ACT
     with pytest.raises(Exception) as execinfo:
-       transform.filter_records_having_improper_datetime_value(test_spark_session, input_df, column_names_for_improper_datetime_check)
+       transform.filter_records_having_improper_datetime_value(input_df, column_names_for_improper_datetime_check)
 
     # ASSERT
     assert ( str(execinfo.value) == """Columns not present in dataframe::- ['end_date', 'start_date']"""  or  str(execinfo.value) == """Columns not present in dataframe::- ['start_date', 'end_date']""")
@@ -325,7 +325,7 @@ def test_df_columns_compare_should_filter_out_records_which_doesnot_match_compar
     compare_expressions = ["""pickup_datetime < dropoff_datetime""", """trip_distance <= 100"""]
 
     # ACT
-    (actual_success_df, actual_error_df) = transform.df_columns_compare(test_spark_session, input_df, compare_expressions)
+    (actual_success_df, actual_error_df) = transform.df_columns_compare(input_df, compare_expressions)
 
     # ASSERT
     pd.testing.assert_frame_equal(left=expected_success_df.toPandas(),right=actual_success_df.toPandas(),check_exact=True )
@@ -357,7 +357,7 @@ def test_df_columns_compare_should_throw_exception_if_string_column_has_comparis
 
     # ACT
     with pytest.raises(Exception) as execinfo:
-       transform.df_columns_compare(test_spark_session, input_df, compare_expressions)
+       transform.df_columns_compare(input_df, compare_expressions)
 
     # ASSERT
     assert str(execinfo.value) == """For string datatype compare operator could only be = and !="""
@@ -388,7 +388,7 @@ def test_df_columns_compare_should_throw_exception_if_invalid_comparision_operat
 
     # ACT
     with pytest.raises(Exception) as execinfo:
-       transform.df_columns_compare(test_spark_session, input_df, compare_expressions)
+       transform.df_columns_compare(input_df, compare_expressions)
 
     # ASSERT
     assert str(execinfo.value) == """Invalid comparison operator!!!!"""

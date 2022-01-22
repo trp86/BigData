@@ -21,11 +21,11 @@ def perform_dq_and_add_additional_columns(df: DataFrame, config_dict: dict, spar
 
     # Data Quality check for weather data (Columns should not have negative value)
     weather_data_negative_check_columns =  config_dict['weather.metadata']['dq.negativevaluecheck.columns'].split(",")
-    (success_df_negative_value_check, error_df_negative_value_check) = transform.filter_records_having_negative_value(sparksession= sparksession, df = weather_data_typecasted, column_names = weather_data_negative_check_columns)
+    (success_df_negative_value_check, error_df_negative_value_check) = transform.filter_records_having_negative_value(df = weather_data_typecasted, column_names = weather_data_negative_check_columns)
 
     # Data Quality check for columns to be compared with certain value or any column in dataframe
     weather_data_columnsorvalue_check_columns =  config_dict['weather.metadata']['dq.columnsorvalue.compare'].split("|")
-    (success_df_columnsorvalue_check, error_df_columnsorvalue_check) = transform.df_columns_compare(sparksession= sparksession, df = success_df_negative_value_check, compare_expressions = weather_data_columnsorvalue_check_columns)
+    (success_df_columnsorvalue_check, error_df_columnsorvalue_check) = transform.df_columns_compare(df = success_df_negative_value_check, compare_expressions = weather_data_columnsorvalue_check_columns)
 
     # Add additional columns
     success_df = add_rain_condition_column(add_snowdepth_condition_column(add_snowfall_condition_column(add_temperature_condition_column(success_df_columnsorvalue_check))))

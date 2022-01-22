@@ -10,11 +10,11 @@ def perform_dq_and_add_additional_columns(df: DataFrame, config_dict: dict, spar
    
     # Data Quality check for columns where negative values are not allowed
     trip_data_negative_check_columns =  config_dict['trip.metadata']['dq.negativevaluecheck.columns'].split(",")
-    (success_df_negative_value_check, error_df_negative_value_check) = transform.filter_records_having_negative_value(sparksession= sparksession, df = df, column_names = trip_data_negative_check_columns)
+    (success_df_negative_value_check, error_df_negative_value_check) = transform.filter_records_having_negative_value(df = df, column_names = trip_data_negative_check_columns)
 
     # Data Quality check for invalid datetime values
     trip_data_datetimestamp_check_columns =  config_dict['trip.metadata']['dq.datetimestampformatcheck.columns'].split(",")
-    (success_df_datetime_check, error_df_datetime_check) = transform.filter_records_having_improper_datetime_value(sparksession= sparksession, df = success_df_negative_value_check, column_names = trip_data_datetimestamp_check_columns)
+    (success_df_datetime_check, error_df_datetime_check) = transform.filter_records_having_improper_datetime_value(df = success_df_negative_value_check, column_names = trip_data_datetimestamp_check_columns)
     
     # Typecast columns for trip data
     trip_data_column_details = list(map(lambda x: x.split(":"), config_dict['trip.metadata']['columns'].split("|")))
@@ -23,7 +23,7 @@ def perform_dq_and_add_additional_columns(df: DataFrame, config_dict: dict, spar
 
     # Data Quality check for comparing two columns or value
     trip_data_columnsorvalue_check_columns =  config_dict['trip.metadata']['dq.columnsorvalue.compare'].split("|")
-    (success_df_columnsorvalue_check, error_df_columnsorvalue_check) = transform.df_columns_compare(sparksession= sparksession, df = trip_data_typecasted, compare_expressions = trip_data_columnsorvalue_check_columns)
+    (success_df_columnsorvalue_check, error_df_columnsorvalue_check) = transform.df_columns_compare(df = trip_data_typecasted, compare_expressions = trip_data_columnsorvalue_check_columns)
     
     # Add additional columns
     success_df = add_trip_day_of_week_column(add_trip_hour_column(add_trip_date_column(success_df_columnsorvalue_check)))
@@ -50,7 +50,7 @@ def add_trip_hour_column(df: DataFrame) -> DataFrame:
     Args:
         df (DataFrame): Spark DataFrame to which trip_hour column needs to be added
     """
-    # Check if column exists in dataframe. If not then raise error
+    # Check if column exists in dataframe. If not then raise error 
     transform.check_if_column_exists_in_df (df, ["pickup_datetime"])
 
     return df.withColumn("trip_hour", f.hour(f.col('pickup_datetime')))
