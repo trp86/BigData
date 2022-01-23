@@ -1,6 +1,5 @@
 """Testcases for transform.py file."""
 
-from copy import error
 from src.jobs.utils.general import *
 import pytest
 from pyspark.sql import SparkSession
@@ -15,12 +14,11 @@ from pyspark.sql.functions import col, lit
 def init():
     app_name = "test_" + Path(__file__).parent.name
     test_spark_session = SparkSession.builder.appName(app_name).getOrCreate()
-    libCommons = ""
     some_df = test_spark_session.createDataFrame([(1234,56.76), (2341,76.45)], schema='vendor_id string, total_amount string')
     column_details_string = "vendor_id:string|total_cust:int|fare:double|maximumtemperature:decimal:(14,4)|pickup_datetime:datetime|weather_date:date:d-M-y"
     some_column_details = list(map(lambda x: x.split(":"), column_details_string.split("|")))
     list(map(lambda a: a==a.insert(2,"") if len(a) == 2 else a , some_column_details))
-    return libCommons, test_spark_session, some_df, some_column_details
+    return test_spark_session, some_df, some_column_details
 
 @pytest.mark.check_if_column_exists_in_df
 def test_column_list_to_be_checked_return_none_if_column_exist(init):
