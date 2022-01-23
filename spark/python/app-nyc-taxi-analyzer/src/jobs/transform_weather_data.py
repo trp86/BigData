@@ -9,6 +9,9 @@ from src.jobs import transform
 
 def perform_dq_and_add_additional_columns(df: DataFrame, config_dict: dict, sparksession: SparkSession) -> tuple : 
 
+    # Create empty dataframe with schema present in input dataframe along with additional column rejectReason
+    error_empty_df: DataFrame = sparksession.createDataFrame(sparksession.sparkContext.emptyRDD(), df.schema).withColumn("rejectreason" , lit(""))
+
     # Change the date column to weather_date as date is a reserved keyword in
     df_weather_renamed = transform.rename_column_in_df(df, "date", "weather_date")
 
@@ -21,11 +24,11 @@ def perform_dq_and_add_additional_columns(df: DataFrame, config_dict: dict, spar
 
     # Data Quality check for weather data (Columns should not have negative value)
     weather_data_negative_check_columns =  config_dict['weather.metadata']['dq.negativevaluecheck.columns'].split(",")
-    (success_df_negative_value_check, error_df_negative_value_check) = transform.filter_records_having_negative_value(df = weather_data_typecasted, column_names = weather_data_negative_check_columns)
+    (success_df_negative_value_check, error_df_negative_value_check) = transform.filter_records_having_negative_value(df = weather_data_typecasted, column_names = weather_data_negative_check_columns, error_empty_df = error_empty_df)
 
     # Data Quality check for columns to be compared with certain value or any column in dataframe
     weather_data_columnsorvalue_check_columns =  config_dict['weather.metadata']['dq.columnsorvalue.compare'].split("|")
-    (success_df_columnsorvalue_check, error_df_columnsorvalue_check) = transform.df_columns_compare(df = success_df_negative_value_check, compare_expressions = weather_data_columnsorvalue_check_columns)
+    (success_df_columnsorvalue_check, error_df_columnsorvalue_check) = transform.df_columns_compare(df = success_df_negative_value_check, compare_expressions = weather_data_columnsorvalue_check_columns, error_empty_df = error_empty_df)
 
     # Add additional columns
     success_df = add_rain_condition_column(add_snowdepth_condition_column(add_snowfall_condition_column(add_temperature_condition_column(success_df_columnsorvalue_check))))

@@ -1,21 +1,9 @@
 """This module is responsible for transform (T) in ETL."""
 
 from pyspark.sql import DataFrame, functions as func
-from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
 import functools
 from pyspark.sql.types import *
-
-
-def create_empty_df(df: DataFrame) -> DataFrame:
-    """
-    Creates an empty dataframe 
-
-    Args:
-        df (DataFrame): Spark DataFrame to  check if column exists
-        column_list_to_be_checked (list): List of column names to be checked
-    """
-    return df.limit(1).filter("false").withColumn("rejectreason" , lit(""))
 
 
 def check_if_column_exists_in_df(df: DataFrame, column_list_to_be_checked: list) -> None:
@@ -89,7 +77,7 @@ def typecastcolumns(df: DataFrame, columns_with_data_type_details: list) -> Data
         )
 
     
-def filter_records_having_negative_value(df: DataFrame, column_names: list) -> tuple:
+def filter_records_having_negative_value(df: DataFrame, column_names: list, error_empty_df: DataFrame) -> tuple:
     """
     Filter out the records where negative values are not accepted and create an error dataframe with a reason
 
@@ -100,9 +88,6 @@ def filter_records_having_negative_value(df: DataFrame, column_names: list) -> t
     # Check if column exists in dataframe. If not then raise error
     check_if_column_exists_in_df (df, column_names)
 
-    # Create empty dataframe with schema present in input dataframe along with additional column rejectReason
-    empty_df: DataFrame = create_empty_df(df)
-
     # Error DataFrame
     error_df: DataFrame = functools.reduce(
         # function
@@ -110,7 +95,7 @@ def filter_records_having_negative_value(df: DataFrame, column_names: list) -> t
         # list
         column_names,
         # accumulator
-        empty_df
+        error_empty_df
     ) 
 
     # Success DataFrame
@@ -126,7 +111,7 @@ def filter_records_having_negative_value(df: DataFrame, column_names: list) -> t
     return (success_df, error_df)
     
 
-def filter_records_having_improper_datetime_value(df: DataFrame, column_names: list) -> tuple:
+def filter_records_having_improper_datetime_value(df: DataFrame, column_names: list, error_empty_df: DataFrame) -> tuple:
     """
     Filter out the records where datetime value is improper
     Args:
@@ -135,9 +120,6 @@ def filter_records_having_improper_datetime_value(df: DataFrame, column_names: l
     """
     # Check if column exists in dataframe. If not then raise error
     check_if_column_exists_in_df (df, column_names)
-
-    # Create empty dataframe with schema present in input dataframe along with additional column rejectReason
-    empty_df: DataFrame = create_empty_df(df)
     
     # Error DataFrame
     error_df: DataFrame = functools.reduce(
@@ -149,7 +131,7 @@ def filter_records_having_improper_datetime_value(df: DataFrame, column_names: l
         # list
         column_names,
         # accumulator
-        empty_df
+        error_empty_df
     ) 
 
     # Success DataFrame
@@ -167,7 +149,7 @@ def filter_records_having_improper_datetime_value(df: DataFrame, column_names: l
 
     return (success_df, error_df) 
 
-def df_columns_compare(df: DataFrame, compare_expressions: list) -> tuple:
+def df_columns_compare(df: DataFrame, compare_expressions: list, error_empty_df: DataFrame) -> tuple:
 
     def column_compare(df: DataFrame, compare_expr: str, success_or_error: bool) -> DataFrame:
         compare_expr_list = compare_expr.split(""" """)
@@ -187,9 +169,6 @@ def df_columns_compare(df: DataFrame, compare_expressions: list) -> tuple:
         compare_expr = col_name.strip() + " " + compare_operator.strip() + " " + value_or_col_tobe_compared.strip()
         return df.filter(expr(compare_expr)) if success_or_error else df.filter(~ expr(compare_expr)).withColumn("rejectreason", lit(col_name + " is not " + compare_operator + " " + value_or_col_tobe_compared))
             
-    # Create empty dataframe with schema present in input dataframe along with additional column rejectReason
-    empty_df: DataFrame = create_empty_df(df)
-
     # Error dataframe
     error_df: DataFrame = functools.reduce(
         # function
@@ -197,7 +176,7 @@ def df_columns_compare(df: DataFrame, compare_expressions: list) -> tuple:
         # list
         compare_expressions,
         # initial or start point 
-        empty_df
+        error_empty_df
     )
     #convert all columns of error dataframe to string
     error_df = error_df.select([error_df[c].cast('string').alias(c) for c in error_df.columns])

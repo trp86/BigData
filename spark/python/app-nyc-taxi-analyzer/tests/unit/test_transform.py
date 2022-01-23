@@ -1,6 +1,6 @@
 """Testcases for transform.py file."""
 
-from os import error, truncate
+from copy import error
 from src.jobs.utils.general import *
 import pytest
 from pyspark.sql import SparkSession
@@ -9,7 +9,7 @@ from src.jobs import transform
 from pyspark.sql.types import *
 from pyspark.sql import Row 
 import pandas as pd
-from pyspark.sql.functions import col
+from pyspark.sql.functions import col, lit
 
 @pytest.fixture
 def init():
@@ -160,10 +160,12 @@ def test_filterrecordshavingnegativevalue_should_filter_out_records_having_negat
        Row("CMT", 0, 6.4), 
        Row("CMT", 1, 0.0)]), input_schema)
 
-    column_names_for_negative_value_check = ["total_cust", "fare"]       
-   
+    column_names_for_negative_value_check = ["total_cust", "fare"] 
+
+    error_empty_df = test_spark_session.createDataFrame(test_spark_session.sparkContext.emptyRDD(), input_df.schema).withColumn("rejectreason" , lit(""))
+      
     # ACT
-    (actual_success_df, actual_error_df) = transform.filter_records_having_negative_value(input_df, column_names_for_negative_value_check)
+    (actual_success_df, actual_error_df) = transform.filter_records_having_negative_value(input_df, column_names_for_negative_value_check, error_empty_df)
 
     # ASSERT
     expected_success_df = test_spark_session.createDataFrame(test_spark_context.parallelize([
@@ -202,11 +204,13 @@ def test_filterrecordshavingnegativevalue_should_throw_exception_if_column_is_no
        Row("CMT", 0, 6.4), 
        Row("CMT", 1, 0.0)]), input_schema) 
 
-    column_names_for_negative_value_check = ["total_cust", "fare", "trip_distance", "start_time"]         
+    column_names_for_negative_value_check = ["total_cust", "fare", "trip_distance", "start_time"]
+
+    error_empty_df = test_spark_session.createDataFrame(test_spark_session.sparkContext.emptyRDD(), input_df.schema).withColumn("rejectreason" , lit(""))         
    
    # ACT
     with pytest.raises(Exception) as execinfo:
-       transform.filter_records_having_negative_value(input_df, column_names_for_negative_value_check)
+       transform.filter_records_having_negative_value(input_df, column_names_for_negative_value_check, error_empty_df)
 
     # ASSERT
     assert ( str(execinfo.value) == """Columns not present in dataframe::- ['trip_distance', 'start_time']"""  or  str(execinfo.value) == """Columns not present in dataframe::- ['start_time', 'trip_distance']""")
@@ -247,9 +251,10 @@ def test_filter_records_having_improper_datetime_value_should_filterout_having_i
        Row("CMT", "2014-01-09 20:45:25", "2333d4-01-09 20:52:31", "dropoff_datetime datetime format is incorrect"),
        Row("CMT", "cdef-01-09 20:45:25", "2333d4-01-09 20:52:31", "dropoff_datetime datetime format is incorrect")]), expected_error_schema).orderBy(['vendor_id', 'pickup_datetime', 'dropoff_datetime', 'rejectreason'], ascending=True)
    
-   
+    error_empty_df = test_spark_session.createDataFrame(test_spark_session.sparkContext.emptyRDD(), input_df.schema).withColumn("rejectreason" , lit(""))
+    
     # ACT
-    (actual_success_df, actual_error_df) = transform.filter_records_having_improper_datetime_value(input_df, column_names_for_improper_datetime_check)
+    (actual_success_df, actual_error_df) = transform.filter_records_having_improper_datetime_value(input_df, column_names_for_improper_datetime_check, error_empty_df)
 
     # ASSERT
     pd.testing.assert_frame_equal(left=expected_success_df.toPandas(),right=actual_success_df.toPandas(),check_exact=True )
@@ -274,9 +279,12 @@ def test_filter_records_having_improper_datetime_value_should_throw_exception_if
 
     column_names_for_improper_datetime_check = ["start_date", "pickup_datetime", "end_date", "dropoff_datetime"]
 
+    error_empty_df = test_spark_session.createDataFrame(test_spark_session.sparkContext.emptyRDD(), input_df.schema).withColumn("rejectreason" , lit(""))
+    
+
    # ACT
     with pytest.raises(Exception) as execinfo:
-       transform.filter_records_having_improper_datetime_value(input_df, column_names_for_improper_datetime_check)
+       transform.filter_records_having_improper_datetime_value(input_df, column_names_for_improper_datetime_check, error_empty_df)
 
     # ASSERT
     assert ( str(execinfo.value) == """Columns not present in dataframe::- ['end_date', 'start_date']"""  or  str(execinfo.value) == """Columns not present in dataframe::- ['start_date', 'end_date']""")
@@ -324,8 +332,11 @@ def test_df_columns_compare_should_filter_out_records_which_doesnot_match_compar
 
     compare_expressions = ["""pickup_datetime < dropoff_datetime""", """trip_distance <= 100"""]
 
+    error_empty_df = test_spark_session.createDataFrame(test_spark_session.sparkContext.emptyRDD(), input_df.schema).withColumn("rejectreason" , lit(""))
+    
+
     # ACT
-    (actual_success_df, actual_error_df) = transform.df_columns_compare(input_df, compare_expressions)
+    (actual_success_df, actual_error_df) = transform.df_columns_compare(input_df, compare_expressions, error_empty_df)
 
     # ASSERT
     pd.testing.assert_frame_equal(left=expected_success_df.toPandas(),right=actual_success_df.toPandas(),check_exact=True )
@@ -355,9 +366,12 @@ def test_df_columns_compare_should_throw_exception_if_string_column_has_comparis
 
     compare_expressions = ["""vendor_id < dropoff_datetime""", """trip_distance <= 100"""]
 
+    error_empty_df = test_spark_session.createDataFrame(test_spark_session.sparkContext.emptyRDD(), input_df.schema).withColumn("rejectreason" , lit(""))
+    
+
     # ACT
     with pytest.raises(Exception) as execinfo:
-       transform.df_columns_compare(input_df, compare_expressions)
+       transform.df_columns_compare(input_df, compare_expressions, error_empty_df)
 
     # ASSERT
     assert str(execinfo.value) == """For string datatype compare operator could only be = and !="""
@@ -386,9 +400,12 @@ def test_df_columns_compare_should_throw_exception_if_invalid_comparision_operat
 
     compare_expressions = ["""pickup_datetime < dropoff_datetime""", """trip_distance && 100"""]
 
+    error_empty_df = test_spark_session.createDataFrame(test_spark_session.sparkContext.emptyRDD(), input_df.schema).withColumn("rejectreason" , lit(""))
+    
+
     # ACT
     with pytest.raises(Exception) as execinfo:
-       transform.df_columns_compare(input_df, compare_expressions)
+       transform.df_columns_compare(input_df, compare_expressions, error_empty_df)
 
     # ASSERT
     assert str(execinfo.value) == """Invalid comparison operator!!!!"""
