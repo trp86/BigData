@@ -36,7 +36,6 @@ def perform_dq_and_add_additional_columns(df: DataFrame, config_dict: dict, spar
 
     return (success_df, error_df)
 
-
 def add_temperature_condition_column (df: DataFrame) -> DataFrame :
     """
     Adds the temperature_condition column in the dataframe if averagetemperature column exists
@@ -47,7 +46,6 @@ def add_temperature_condition_column (df: DataFrame) -> DataFrame :
     # Check if column exists in dataframe. If not then raise error
     transform.check_if_column_exists_in_df (df, ["averagetemperature"])
 
-    df.printSchema()
     # https://stackoverflow.com/questions/65732120/pyspark-py4j-py4jexception-method-andclass-java-lang-integer-does-not-exist
     return df.withColumn("temperature_condition", when(col("averagetemperature") < 32, "verycold")
                                                 .when((col("averagetemperature") >= 32) & (col("averagetemperature") < 59), "cold")
