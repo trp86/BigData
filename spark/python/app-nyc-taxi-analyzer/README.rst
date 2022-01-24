@@ -13,6 +13,7 @@ Application "app-nyc-taxi-analyzer" is a data pipeline developed using Apache Sp
 It reads csv files from a location (either HDFS or local file system), performs data quality, 
 data enrichment and stores the enriched data to another location (either HDFS or local file system). Below
 are the steps or processes which are performed.
+
 - Data Ingestion
 - Data Preparation and cleaning
 - Data Processing
@@ -56,7 +57,7 @@ There are two data source files which are used in this application. Below are th
 - **Weather Data Set** : The dataset contains information about weather in NewYork for a specified year.More information 
   about the dataset could be found here https://www.kaggle.com/mathijs/weather-data-in-new-york-city-2016
 
-*Schema of the data:*
+  *Schema of the data:*
 
   ==================  ==========
   field_name          data_type
