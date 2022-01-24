@@ -99,3 +99,136 @@ def test_add_snowfall_condition_column_raise_exception_if_snowfall_column_not_pr
 
     # ASSERT
     assert str(execinfo.value) == """Columns not present in dataframe::- ['snowfall']"""
+
+
+@pytest.mark.add_snowdepth_condition_column
+# when add_snowdepth_condition_column function is invoked it should add snowdepth_condition column to input dataframe
+def test_add_snowdepth_condition_column_if_snowdepth_column_exists (spark_session_test: SparkSession):
+    # ASSEMBLE
+    input_df = spark_session_test.createDataFrame([
+        Row(snowdepth="-2"), Row(snowdepth="0.0001"), Row(snowdepth="0.7"), Row(snowdepth="2"), 
+        Row(snowdepth="4"), Row(snowdepth="10"), Row(snowdepth="15"), Row(snowdepth="30")]) \
+        .withColumn("snowdepth",col("snowdepth").cast(DecimalType(14, 4)))
+
+    expected_df = spark_session_test.createDataFrame([
+        Row(snowdepth="-2", snowdepth_condition="nosnow"), 
+        Row(snowdepth="0.0001", snowdepth_condition="nosnow"), 
+        Row(snowdepth="0.7", snowdepth_condition="moderate"), 
+        Row(snowdepth="2", snowdepth_condition="moderate"), 
+        Row(snowdepth="4", snowdepth_condition="heavy"), 
+        Row(snowdepth="10", snowdepth_condition="heavy"), 
+        Row(snowdepth="15", snowdepth_condition="violent"), 
+        Row(snowdepth="30", snowdepth_condition="violent")]) \
+        .withColumn("snowdepth",col("snowdepth").cast(DecimalType(14, 4))) \
+        .orderBy(['snowdepth', 'snowdepth_condition'], ascending=True)
+
+    # ACT
+    actual_df = transform_weather_data.add_snowdepth_condition_column(input_df)
+    
+    # ASSERT
+    pd.testing.assert_frame_equal(left=expected_df.toPandas(),right=actual_df.orderBy(['snowdepth', 'snowdepth_condition'], ascending=True).toPandas(),check_exact=True )
+
+
+@pytest.mark.add_snowdepth_condition_column
+# when add_snowdepth_condition_column function is invoked it should throw exception if snowdepth column is not present in dataframe
+def test_add_snowdepth_condition_column_raise_exception_if_snowdepth_column_not_present(spark_session_test: SparkSession):
+    # ASSEMBLE
+    input_df = spark_session_test.createDataFrame([
+        Row(snow_depth="-2")]) \
+        .withColumn("snow_depth",col("snow_depth").cast(DecimalType(14, 4)))
+
+     # ACT
+    with pytest.raises(Exception) as execinfo:
+       transform_weather_data.add_snowdepth_condition_column(input_df)
+
+    # ASSERT
+    assert str(execinfo.value) == """Columns not present in dataframe::- ['snowdepth']"""
+
+
+@pytest.mark.add_snowdepth_condition_column
+# when add_snowdepth_condition_column function is invoked it should add snowdepth_condition column to input dataframe
+def test_add_snowdepth_condition_column_if_snowdepth_column_exists (spark_session_test: SparkSession):
+    # ASSEMBLE
+    input_df = spark_session_test.createDataFrame([
+        Row(snowdepth="-2"), Row(snowdepth="0.0001"), Row(snowdepth="0.7"), Row(snowdepth="2"), 
+        Row(snowdepth="4"), Row(snowdepth="10"), Row(snowdepth="15"), Row(snowdepth="30")]) \
+        .withColumn("snowdepth",col("snowdepth").cast(DecimalType(14, 4)))
+
+    expected_df = spark_session_test.createDataFrame([
+        Row(snowdepth="-2", snowdepth_condition="nosnow"), 
+        Row(snowdepth="0.0001", snowdepth_condition="nosnow"), 
+        Row(snowdepth="0.7", snowdepth_condition="moderate"), 
+        Row(snowdepth="2", snowdepth_condition="moderate"), 
+        Row(snowdepth="4", snowdepth_condition="heavy"), 
+        Row(snowdepth="10", snowdepth_condition="heavy"), 
+        Row(snowdepth="15", snowdepth_condition="violent"), 
+        Row(snowdepth="30", snowdepth_condition="violent")]) \
+        .withColumn("snowdepth",col("snowdepth").cast(DecimalType(14, 4))) \
+        .orderBy(['snowdepth', 'snowdepth_condition'], ascending=True)
+
+    # ACT
+    actual_df = transform_weather_data.add_snowdepth_condition_column(input_df)
+    
+    # ASSERT
+    pd.testing.assert_frame_equal(left=expected_df.toPandas(),right=actual_df.orderBy(['snowdepth', 'snowdepth_condition'], ascending=True).toPandas(),check_exact=True )
+
+
+@pytest.mark.add_snowdepth_condition_column
+# when add_snowdepth_condition_column function is invoked it should throw exception if snowdepth column is not present in dataframe
+def test_add_snowdepth_condition_column_raise_exception_if_snowdepth_column_not_present(spark_session_test: SparkSession):
+    # ASSEMBLE
+    input_df = spark_session_test.createDataFrame([
+        Row(snow_depth="-2")]) \
+        .withColumn("snow_depth",col("snow_depth").cast(DecimalType(14, 4)))
+
+     # ACT
+    with pytest.raises(Exception) as execinfo:
+       transform_weather_data.add_snowdepth_condition_column(input_df)
+
+    # ASSERT
+    assert str(execinfo.value) == """Columns not present in dataframe::- ['snowdepth']"""
+
+
+@pytest.mark.add_rain_condition_column
+# when add_rain_condition_column function is invoked it should add rain_condition column to input dataframe
+def test_add_rain_condition_column_if_precipitation_column_exists (spark_session_test: SparkSession):
+    # ASSEMBLE
+    input_df = spark_session_test.createDataFrame([
+        Row(precipitation="-1"), Row(precipitation="0"), Row(precipitation="0.1"), Row(precipitation="0.25"), 
+        Row(precipitation="0.3"), Row(precipitation="1.5"), Row(precipitation="12"), Row(precipitation="2.5")]) \
+        .withColumn("precipitation",col("precipitation").cast(DecimalType(14, 4)))
+
+    expected_df = spark_session_test.createDataFrame([
+        Row(precipitation="-1", rain_condition="norain"), 
+        Row(precipitation="0", rain_condition="norain"), 
+        Row(precipitation="0.1", rain_condition="moderate"), 
+        Row(precipitation="0.25", rain_condition="moderate"), 
+        Row(precipitation="0.3", rain_condition="heavy"), 
+        Row(precipitation="1.5", rain_condition="heavy"), 
+        Row(precipitation="12", rain_condition="violent"), 
+        Row(precipitation="2.5", rain_condition="violent")
+        ]) \
+        .withColumn("precipitation",col("precipitation").cast(DecimalType(14, 4))) \
+        .orderBy(['precipitation', 'rain_condition'], ascending=True)
+
+    # ACT
+    actual_df = transform_weather_data.add_rain_condition_column(input_df)
+    
+    # ASSERT
+    pd.testing.assert_frame_equal(left=expected_df.toPandas(),right=actual_df.orderBy(['precipitation', 'rain_condition'], ascending=True).toPandas(),check_exact=True )
+
+
+@pytest.mark.add_rain_condition_column
+# when add_rain_condition_column function is invoked it should throw exception if precipitation column is not present in dataframe
+def test_add_rain_condition_column_column_raise_exception_if_precipitation_column_not_present(spark_session_test: SparkSession):
+    # ASSEMBLE
+    input_df = spark_session_test.createDataFrame([
+        Row(rain_depth="-2")]) \
+        .withColumn("rain_depth",col("rain_depth").cast(DecimalType(14, 4)))
+
+     # ACT
+    with pytest.raises(Exception) as execinfo:
+       transform_weather_data.add_rain_condition_column(input_df)
+
+    # ASSERT
+    assert str(execinfo.value) == """Columns not present in dataframe::- ['precipitation']"""    
