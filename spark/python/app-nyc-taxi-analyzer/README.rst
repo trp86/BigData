@@ -21,7 +21,7 @@ are the steps or processes which are performed.
 - **Best Practices**
 
 **Data Ingestion**
-------------------
+==================
 
 There are two data source files which are used in this application. Below are the details for the same.
 
