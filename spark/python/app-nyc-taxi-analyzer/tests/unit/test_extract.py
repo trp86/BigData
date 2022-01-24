@@ -10,7 +10,7 @@ import pathlib
 @pytest.mark.extract_csv_file
 def test_true_condition_extract_csv_file(spark_session_test: SparkSession):
     # ASSEMBLE
-    test_extract_csv_file_location =  str(pathlib.Path().absolute()) + "/resources/input/test_extract/"
+    test_extract_csv_file_location =  str(Path(__file__).parent.parent) + """/resources/data/input/test_extract/"""
     expected_df = spark_session_test.createDataFrame([(1234,56.76), (2341,76.45), (1009,12), (120,75)], schema='vendor_id string, total_amount string')
 
     # ACT
@@ -23,13 +23,13 @@ def test_true_condition_extract_csv_file(spark_session_test: SparkSession):
     assert expected_df.schema == actual_df.schema, 'Expected DF and Actual DF schema Should match'
 
 @pytest.mark.extract_csv_file
-def test_exception_if_sparksession_object_is_null(spark_session_test: SparkSession):
+def test_exception_if_sparksession_object_is_null():
     # ASSEMBLE
     test_extract_csv_file_location =  Path(__file__).parent.parent.name + "/resources/input/test_extract/"
 
     # ACT
     with pytest.raises(IOError) as execinfo:
-        extract.extract_csv_file(spark_session_test, test_extract_csv_file_location)
+        extract.extract_csv_file(None, test_extract_csv_file_location)
 
     # ASSERT
     assert str(execinfo.value) == "Spark Session object is None!!!!"

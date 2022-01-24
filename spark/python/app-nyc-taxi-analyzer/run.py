@@ -10,7 +10,7 @@ def main(
     env: EnvEnum = typer.Argument(..., help="Environment for the spark-job"),
     # file_path: Path where all the config files are present
     config_file_path: str = typer.Argument(
-        f"{Path(__file__).parent}/src/resources/",
+        f"{Path(__file__).parent}/src/resources/conf/app-nyc-taxi-analyzer.ini",
         help="Path where all the config files are present",
     ),
 ) -> None:

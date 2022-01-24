@@ -2,14 +2,11 @@
 building and ETL."""
 
 import contextlib
-import configparser
 from pyspark.sql import SparkSession, functions as f
 from pathlib import Path
 from typing import Generator
-from pyspark.sql import DataFrame
 from src.jobs import (
     extract,
-    transform,
     transform_weather_data,
     transform_trip_data,
     load,
@@ -27,15 +24,14 @@ def jobs_main(
     Args:
         sparksession (SparkSession) : spark session to perform ETL job
         logger (Logger) : logger class instance
-        file_path (str): path on which the job will be performed
+        config_file_path (str): config file name along with full path
 
     """
     # Read config file
-    config_file = config_file_path + "conf/app-nyc-taxi-analyzer.ini"
-    config_dict = read_config_file(config_file_path=config_file)
+    config_dict = read_config_file(config_file_path)
 
     # Create dataframe for trip data
-    trip_data_file_path = config_file_path + "data/nyc_trip/"
+    trip_data_file_path = config_dict["trip.metadata"]["input.path"]
     df_trip = extract.extract_csv_file(sparksession, trip_data_file_path)
     logger.info("Trip data " f"{trip_data_file_path} extracted to DataFrame")
 
@@ -57,7 +53,7 @@ def jobs_main(
         raise IOError("Mismatch in header for trip data.Please verify !!!!!")
 
     # Create dataframe for weather data
-    weather_data_file_path = config_file_path + "data/weather/"
+    weather_data_file_path = config_dict["weather.metadata"]["input.path"]
     df_weather = extract.extract_csv_file(sparksession, weather_data_file_path)
     logger.info("Weather data" f"{weather_data_file_path} extracted to DataFrame")
 
@@ -102,8 +98,6 @@ def jobs_main(
         "left_outer",
     )
 
-    df_to_persist.show(5, truncate=bool(False))
-
     load.write_to_path(
         df_to_persist, config_dict["processed.metadata"]["processed.data.success.path"]
     )
@@ -113,12 +107,6 @@ def jobs_main(
     load.write_to_path(
         df_weather_error, config_dict["processed.metadata"]["weather.data.error.path"]
     )
-
-    """count_df = transform.transform_df(df)
-    logger.info("Counted words in the DataFrame")
-
-    load.write_to_path(count_df)
-    logger.info("Written counted words to path")"""
 
 
 @contextlib.contextmanager
