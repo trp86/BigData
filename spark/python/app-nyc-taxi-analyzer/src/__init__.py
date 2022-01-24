@@ -1,1 +1,1 @@
-"""Source-code related to the spark-skeleton."""
+"""Source-code for app-nyc-taxi-analyzer"""
