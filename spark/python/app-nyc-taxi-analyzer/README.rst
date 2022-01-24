@@ -28,28 +28,44 @@ There are two data source files which are used in this application. Below are th
   and drop-off locations, trip distances, itemized fares, rate types, payment types, and driver-reported passenger counts.
   More information about the dataset could be found here https://www1.nyc.gov/site/tlc/about/tlc-trip-record-data.page
 
-**_Schema of the data:_**
+  *Schema of the data:*
 
-==================  ==========
-field_name          data_type
-==================  ==========
-vendor_id           string
-pickup_datetime     timestamp
-dropoff_datetime	timestamp
-passenger_count		int
-trip_distance		double
-pickup_longitude	string
-pickup_latitude		string
-rate_code			int
-store_and_fwd_flag  string 
-dropoff_longitude   string
-dropoff_latitude    string
-payment_type        string
-fare_amount         double
-surcharge           double
-mta_tax				double
-tip_amount          double
-tolls_amount        double
-total_amount        double
-==================  ==========
-- Are intuitive
+  ==================  ==========
+  field_name          data_type
+  ==================  ==========
+  vendor_id             string
+  pickup_datetime       timestamp
+  dropoff_datetime	    timestamp
+  passenger_count		int
+  trip_distance		    double
+  pickup_longitude	    string
+  pickup_latitude		string
+  rate_code			    int
+  store_and_fwd_flag    string 
+  dropoff_longitude     string
+  dropoff_latitude      string
+  payment_type          string
+  fare_amount           double
+  surcharge             double
+  mta_tax				double
+  tip_amount            double
+  tolls_amount          double
+  total_amount          double
+  ==================  ==========
+
+- **Weather Data Set** : The dataset contains information about weather in NewYork for a specified year.More information 
+  about the dataset could be found here https://www.kaggle.com/mathijs/weather-data-in-new-york-city-2016
+
+*Schema of the data:*
+
+  ==================  ==========
+  field_name          data_type
+  ==================  ==========
+  date                  date
+  maximumtemperature    double
+  minimumtemperature	double
+  averagetemperature    double
+  precipitation		    double
+  snowfall	            double
+  snowdepth		        double
+  ==================  ==========
