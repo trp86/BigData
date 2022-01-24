@@ -14,14 +14,14 @@ It reads csv files from a location (either HDFS or local file system), performs 
 data enrichment and stores the enriched data to another location (either HDFS or local file system). Below
 are the steps or processes which are performed.
 
-- Data Ingestion
-- Data Preparation and cleaning
-- Data Processing
-- Technology Used
-- Best Practices
+- **Data Ingestion**
+- **Data Preparation and cleaning**
+- **Data Processing**
+- **Technology Used**
+- **Best Practices**
 
-Data Ingestion
---------------
+**Data Ingestion**
+------------------
 
 There are two data source files which are used in this application. Below are the details for the same.
 
