@@ -2,60 +2,53 @@
 
 from src.jobs.utils import general as gen 
 import pytest
-from pyspark.sql import SparkSession
 from pathlib import Path
 
 
-@pytest.fixture
-def init():
-    app_name = "test_" + Path(__file__).parent.name
-    test_spark_session = SparkSession.builder.appName(app_name).getOrCreate()
-    return test_spark_session
-
 @pytest.mark.is_header_match
-def test_true_condition_is_header_match(init):
-    # given
+def test_true_condition_is_header_match():
+    # ASSEMBLE
     expected_columns_list = """vendor_id,start_date""".split(",")
     actual_columns_list = ["vendor_id", "start_date"]
 
-    # when
+    # ASERT
     header_match_status = gen.is_header_match(expected_columns_list, actual_columns_list)
 
-    # then
+    # ACT
     assert bool(True) == header_match_status
 
 @pytest.mark.is_header_match
-def test_false_condition_is_header_match(init):
-    # given
+def test_false_condition_is_header_match():
+    # ASSEMBLE
     expected_columns_list = """vendor_id,start_date""".split(",")
     actual_columns_list = ["vendor_id", "start_datum"]
 
-    # when
+    # ASERT
     header_match_status = gen.is_header_match(expected_columns_list, actual_columns_list)
 
-    # then
+    # ACT
     assert bool(False) == header_match_status    
 
 @pytest.mark.read_config_file
-def test_true_condition_read_config_file(init):
-    # given
+def test_true_condition_read_config_file():
+    # ASSEMBLE
     test_config_file_path = str(Path(__file__).parent.parent) + """/resources/conf/someconfigfile.ini"""
     expected_config = {"header": {"key": "value"}}
 
-    # when
+    # ASERT
     actual_config = gen.read_config_file(test_config_file_path)
 
-    # then
+    # ACT
     assert bool(True) == (expected_config == actual_config)  
 
 @pytest.mark.read_config_file
-def test_throw_exception_if_config_file_not_present(init):
-    # given
+def test_throw_exception_if_config_file_not_present():
+    # ASSEMBLE
     config_file_path_not_present = str(Path(__file__).parent.parent) + """/resources/inputdata/iamnotpresent.ini"""
 
-    # when
+    # ASERT
     with pytest.raises(IOError) as execinfo: 
          gen.read_config_file(config_file_path_not_present)
     
-    # then
+    # ACT
     assert str(execinfo.value) == "Cannot open configuration file::- " + config_file_path_not_present
