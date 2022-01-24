@@ -17,9 +17,9 @@ sys.path.insert(0, op.abspath(op.join('..', '..', 'src', 'jobs')))
 
 # -- Project information -----------------------------------------------------
 
-project = 'skeleton-pyspark'
-copyright = '2021, Dataroots'
-author = 'Dataroots'
+project = 'app-nyc-taxi-analyzer'
+copyright = '2022, truptipradhan86@gmail.com'
+author = 'trp86'
 
 # The full version, including alpha/beta/rc tags
 release = '0.1.0'

@@ -1,6 +1,5 @@
 """This module is responsible for transform (E) in ETL."""
 from pyspark.sql import SparkSession, DataFrame
-import sys
 from os import path
 
 
@@ -17,13 +16,15 @@ def extract_csv_file(sparksession: SparkSession, file_path: str) -> DataFrame:
 
     """
     try:
-        return sparksession.read.option("header", True).csv(file_path)
+        df=sparksession.read.option("header", True).csv(file_path)
 
-    except AttributeError as ae:
+    except AttributeError:
         if sparksession is None:
             raise IOError("Spark Session object is None!!!!")
 
-    except:
+    except Exception:
         # Check if file_path exists
         if path.exists(file_path) is bool(False):
             raise IOError("Path desnot exist::- " + file_path)
+
+    return df        
