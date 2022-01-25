@@ -122,7 +122,7 @@ Below are the tasks that are performed during this phase.
   snowfall	          double
   snowdepth		        double
   ==================  ==========
-- **Column or Value Compare**:Few columns are usually present which have certain limit of ceiling value. If the values of these columns exceed than ceiling value then the records are rejected. For trip data below checks are done.
+- **Column or Value Compare** : Few columns are usually present which have certain limit of ceiling value. If the values of these columns exceed than ceiling value then the records are rejected. For trip data below checks are done.
          - pickup_datetime < dropoff_datetime
          - trip_distance <= 100
     
