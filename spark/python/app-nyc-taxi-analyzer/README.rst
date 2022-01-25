@@ -212,7 +212,6 @@ pickup_latitude 	      int
 rate_code 	            int
 store_and_fwd_flag 	    string
 dropoff_longitude 	    int
-dropoff_latitude 	      int
 payment_type 	          string
 fare_amount 	          int
 surcharge 	            int
@@ -239,13 +238,12 @@ rain_condition 	        string
 Processed data are persisted in partitioned format. Columns used for partitioning are weather_date. Error records are also persisted in partitioned format. Columns used for partitioning are rejectReason.
 
 - **Technology Used**
-
-           - Python
-           - Sphinx
-           - Flake8
-           - pytest
-           - pyspark
-           - pandas
-           - poetry 
+          - Python
+          - Sphinx
+          - Flake8
+          - pytest
+          - pyspark
+          - pandas
+          - poetry 
   
   **NOTE** : More details about the dependencies and version can be found in **pyproject.toml**
