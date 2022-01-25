@@ -265,10 +265,26 @@ Processed data are persisted in partitioned format. Columns used for partitionin
 - pytest
 - pyspark
 - pandas
-- poetry 
+- poetry
+- bandit 
+- coverage
   
 **NOTE** : More details about the dependencies and version can be found in **pyproject.toml**
 
 
 **Best Practices**
 ===================
+- Unit Tests
+- Integration Tests
+- Flake8 Linting. For more details please 
+  go through this <https://pybit.es/articles/linting-with-flake8/>
+- Static type check with mypy. For more details please 
+  go through this <https://www.section.io/engineering-education/python-static-typing/>
+- Prevent security issues with bandit. For more details please 
+  go through this <https://resources.hacware.com/bandit-security-scan-for-python-code/>  
+- Code Coverage with python package coverage. For more details please
+  look go through these <https://coverage.readthedocs.io/en/6.2/> 
+  and <https://breadcrumbscollector.tech/how-to-use-code-coverage-in-python-with-pytest/>
+- Documentation through Sphinx. For more details please
+  look go through these <https://shunsvineyard.info/2019/09/19/use-sphinx-for-python-documentation/>
+  and <https://python.plainenglish.io/documentation-with-sphinx-dd86bedb7512>  
