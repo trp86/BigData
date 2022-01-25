@@ -89,24 +89,24 @@ Below are the tasks that are performed during this phase.
   ==================  ==========
   field_name          data_type
   ==================  ==========
-  vendor_id             string
-  pickup_datetime       timestamp
-  dropoff_datetime	    timestamp
-  passenger_count		int
+  vendor_id           string
+  pickup_datetime     timestamp
+  dropoff_datetime	  timestamp
+  passenger_count		  int
   trip_distance		    double
-  pickup_longitude	    string
-  pickup_latitude		string
-  rate_code			    int
-  store_and_fwd_flag    string 
-  dropoff_longitude     string
-  dropoff_latitude      string
-  payment_type          string
-  fare_amount           double
-  surcharge             double
-  mta_tax				double
-  tip_amount            double
-  tolls_amount          double
-  total_amount          double
+  pickup_longitude	  string
+  pickup_latitude		  string
+  rate_code			      int
+  store_and_fwd_flag  string 
+  dropoff_longitude   string
+  dropoff_latitude    string
+  payment_type        string
+  fare_amount         double
+  surcharge           double
+  mta_tax				      double
+  tip_amount          double
+  tolls_amount        double
+  total_amount        double
   ==================  ==========
   
   Below are the details of weather data.
@@ -114,15 +114,14 @@ Below are the tasks that are performed during this phase.
   ==================  ==========
   field_name          data_type
   ==================  ==========
-  date                  date
-  maximumtemperature    double
+  date                date
+  maximumtemperature  double
   minimumtemperature	double
-  averagetemperature    double
+  averagetemperature  double
   precipitation		    double
-  snowfall	            double
+  snowfall	          double
   snowdepth		        double
   ==================  ==========
-
 - **Column or Value Compare**:Few columns are usually present which have certain limit of ceiling value. If the values of these columns exceed than ceiling value then the records are rejected. For trip data below checks are done.
          - pickup_datetime < dropoff_datetime
          - trip_distance <= 100
