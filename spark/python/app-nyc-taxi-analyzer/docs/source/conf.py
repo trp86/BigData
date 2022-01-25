@@ -14,7 +14,6 @@ from os import path as op
 import sys
 sys.path.insert(0, op.abspath(op.join('..', '..', 'src', 'jobs')))
 
-
 # -- Project information -----------------------------------------------------
 
 project = 'app-nyc-taxi-analyzer'
@@ -22,7 +21,7 @@ copyright = '2022, truptipradhan86@gmail.com'
 author = 'trp86'
 
 # The full version, including alpha/beta/rc tags
-release = '0.1.0'
+release = '1.0.0'
 
 
 # -- General configuration ---------------------------------------------------

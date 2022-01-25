@@ -2,8 +2,8 @@
     :target: https://img.shields.io/badge/python-3.8-blue
     :alt: Python version
 
-.. image:: https://img.shields.io/badge/spark-3.0-orange
-    :target: https://img.shields.io/badge/spark-3.0-orange
+.. image:: https://img.shields.io/badge/spark-3.1.2-orange
+    :target: https://img.shields.io/badge/spark-3.1.2-orange
     :alt: Spark version
 
 =====================
