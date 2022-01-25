@@ -86,7 +86,7 @@ Below are the tasks that are performed during this phase.
 - **Date Or Timestamp column Check** : The date and timestamp columns should have valid dates and timestamp. If not then the records are rejected. For trip data *pickup_datetime,dropoff_datetime* columns undergo this check.
 - **Assign proper data type** : Most appropriate data types are 
   assigned to the columns. Below are the details for trip data.
-  
+
   ==================  ==========
   field_name          data_type
   ==================  ==========
@@ -149,62 +149,67 @@ Below are the tasks that are performed during this phase.
   * snowfall
   * snowdepth
   
-- **Adding additional columns**: For trip data below columns are added to original data set.
-         - trip_date
-         - trip_hour
-         - trip_day_of_week
+- **Adding additional columns**: For trip data below columns are 
+  added to original data set.
+
+  * trip_date
+  * trip_hour
+  * trip_day_of_week
   
   To derive these columns *pickup_datetime* column is used.
   
   For weather data below columns are added.
-          - temperature_condition
+          
+  * temperature_condition
             
-            **NOTE** : All temparatures are in Fahrenheit
+    **NOTE** : All temparatures are in Fahrenheit
 			      
-            ====================================================        =========
-             Condition                                                  value 
-            ====================================================        =========
-             averagetemperature <32                                     verycold
-             averagetemperature >= 32 && averagetemperature < 59        cold
-             averagetemperature >= 59 && averagetemperature < 77        normal
-             averagetemperature >= 77 && averagetemperature < 95        hot
-             averagetemperature > 95                                    veryhot
-            ====================================================        =========    
+    ====================================================       =========
+      Condition                                                  value 
+    ====================================================       =========
+    averagetemperature <32                                     verycold
+    averagetemperature >= 32 && averagetemperature < 59        cold
+    averagetemperature >= 59 && averagetemperature < 77        normal
+    averagetemperature >= 77 && averagetemperature < 95        hot
+    averagetemperature > 95                                    veryhot
+    ====================================================       =========    
 
-          - snowfall_condition
-            
-            ====================================================        =========
-             Condition                                                  value 
-            ====================================================        =========
-             snowfall < 0.0001                                          nosnow
-             snowfall >= 0.0001 && snowfall < 4                         moderate
-             snowfall >= 4 && snowfall < 15                             heavy 
-             snowfall >= 15                                             violent
-            ====================================================        =========    
+  * snowfall_condition
+    
+    ====================================================       =========
+     Condition                                                  value 
+    ====================================================       =========
+    snowfall < 0.0001                                          nosnow
+    snowfall >= 0.0001 && snowfall < 4                         moderate
+    snowfall >= 4 && snowfall < 15                             heavy 
+    snowfall >= 15                                             violent
+    ====================================================       =========    
 
-          - snowdepth_condition
-            
-            ====================================================        =========
-             Condition                                                  value 
-            ====================================================        =========
-             snowdepth < 0.0001                                         nosnow
-             snowdepth >= 0.0001 && snowdepth < 4                       moderate
-             snowdepth >= 4 && snowdepth < 15                           heavy 
-             snowdepth >= 15                                            violent
-            ====================================================        =========    
+  * snowdepth_condition
+    
+    ====================================================       =========
+     Condition                                                  value 
+    ====================================================       =========
+    snowdepth < 0.0001                                         nosnow
+    snowdepth >= 0.0001 && snowdepth < 4                       moderate
+    snowdepth >= 4 && snowdepth < 15                           heavy 
+    snowdepth >= 15                                            violent
+    ====================================================       =========    
 
-          - rain_condition
-            
-            ====================================================        =========
-             Condition                                                  value 
-            ====================================================        =========
-             precipitation <= 0                                         norain
-             precipitation > 0 && precipitation < 0.3                   moderate
-             precipitation >= 0.3 && precipitation < 2                  heavy 
-             precipitation >= 2                                         violent
-            ====================================================        =========    
+  * rain_condition
+    
+    ====================================================       =========
+     Condition                                                  value 
+    ====================================================       =========
+    precipitation <= 0                                         norain
+    precipitation > 0 && precipitation < 0.3                   moderate
+    precipitation >= 0.3 && precipitation < 2                  heavy 
+    precipitation >= 2                                         violent
+    ====================================================       =========    
 
-  Records which fail to satisfy the above rules are marked as error records with a reject reason. Schema of the error records have one extra column rejectReason.  
+  Records which fail to satisfy the above rules are marked as 
+  error records with a reject reason. Schema of the error records 
+  have one extra column rejectReason.  
 
 
 **Data Processing**
