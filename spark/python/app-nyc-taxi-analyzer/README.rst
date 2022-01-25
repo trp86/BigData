@@ -90,7 +90,8 @@ Below are the tasks that are performed during this phase.
   exceed than ceiling value then the records are rejected. 
   For trip data below checks are done.
   
-  * Test
+  * pickup_datetime < dropoff_datetime
+  * trip_distance <= 100
      
 - **Replace Values**: In the weather dataset there are few columns of decimal data type which has values as 'T'. This value indicates that value is negligible but not 0. Hence, these values are replaced by 0.0001. Below are the columns which undergo this transformation.
          - maximumtemperature
