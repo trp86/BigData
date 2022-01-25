@@ -94,16 +94,22 @@ Below are the tasks that are performed during this phase.
   * trip_distance <= 100
 
   For weather data below checks are done.
-  
+
   * minimumtemperature < maximumtemperature
      
-- **Replace Values**: In the weather dataset there are few columns of decimal data type which has values as 'T'. This value indicates that value is negligible but not 0. Hence, these values are replaced by 0.0001. Below are the columns which undergo this transformation.
-         - maximumtemperature
-         - minimumtemperature
-         - averagetemperature
-         - precipitation
-         - snowfall
-         - snowdepth
+- **Replace Values**: In the weather dataset there are few columns of 
+  decimal data type which has values as 'T'. 
+  This value indicates that value is negligible but not 0. 
+  Hence, these values are replaced by 0.0001. Below are the 
+  columns which undergo this transformation.
+
+  * maximumtemperature
+  * minimumtemperature
+  * averagetemperature
+  * precipitation
+  * snowfall
+  * snowdepth
+  
 - **Adding additional columns**: For trip data below columns are added to original data set.
          - trip_date
          - trip_hour
