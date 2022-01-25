@@ -84,7 +84,46 @@ Below are the tasks that are performed during this phase.
 - **Column Name Check** : If any of the columns have a reserved keyword then the column names are modified. Only one column name is renamed here. In weather dataset there is a column named 'date'. This column is renamed to 'weather_date'.
 - **Negative Value Check** : Few columns should never have negative values. If these columns have negative value then records are rejected.For trip data,columns named *trip_distance,fare_amount,surcharge,mta_tax,tip_amount,tolls_amount,total_amount,passenger_count* undergo this check and for weather data,columns named *precipitation,snowfall,snowdepth* undergo this check. 
 - **Date Or Timestamp column Check** : The date and timestamp columns should have valid dates and timestamp. If not then the records are rejected. For trip data *pickup_datetime,dropoff_datetime* columns undergo this check.
-- **Assign proper data type** : Most appropriate data types are assigned to the columns. Below are the details for trip data.
+- **Assign proper data type** : Most appropriate data types are 
+  assigned to the columns. Below are the details for trip data.
+  
+  ==================  ==========
+  field_name          data_type
+  ==================  ==========
+  vendor_id           string
+  pickup_datetime     timestamp
+  dropoff_datetime	  timestamp
+  passenger_count		  int
+  trip_distance		    double
+  pickup_longitude	  string
+  pickup_latitude		  string
+  rate_code			      int
+  store_and_fwd_flag  string 
+  dropoff_longitude   string
+  dropoff_latitude    string
+  payment_type        string
+  fare_amount         double
+  surcharge           double
+  mta_tax				      double
+  tip_amount          double
+  tolls_amount        double
+  total_amount        double
+  ==================  ==========
+  
+  Below are the details of weather data.
+
+  ==================  ==========
+  field_name          data_type
+  ==================  ==========
+  date                date
+  maximumtemperature  double
+  minimumtemperature	double
+  averagetemperature  double
+  precipitation		    double
+  snowfall	          double
+  snowdepth		        double
+  ==================  ==========
+
 - **Column or Value Compare** : Few columns are usually present which 
   have certain limit of ceiling value. If the values of these columns 
   exceed than ceiling value then the records are rejected. 
