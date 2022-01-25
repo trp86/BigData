@@ -86,10 +86,10 @@ Below are the tasks that are performed during this phase.
 - **Date Or Timestamp column Check** : The date and timestamp columns should have valid dates and timestamp. If not then the records are rejected. For trip data *pickup_datetime,dropoff_datetime* columns undergo this check.
 - **Assign proper data type** : Most appropriate data types are assigned to the columns. Below are the details for trip data.
 - **Column or Value Compare** : Few columns are usually present which have certain limit of ceiling value. If the values of these columns exceed than ceiling value then the records are rejected. For trip data below checks are done.
-         - pickup_datetime < dropoff_datetime
-         - trip_distance <= 100    
+    - pickup_datetime < dropoff_datetime
+    - trip_distance <= 100    
   For weather data below checks are done.
-         - minimumtemperature < maximumtemperature
+    - minimumtemperature < maximumtemperature
 - **Replace Values**: In the weather dataset there are few columns of decimal data type which has values as 'T'. This value indicates that value is negligible but not 0. Hence, these values are replaced by 0.0001. Below are the columns which undergo this transformation.
          - maximumtemperature
          - minimumtemperature
