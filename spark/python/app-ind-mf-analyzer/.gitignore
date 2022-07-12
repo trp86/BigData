@@ -1,0 +1,4 @@
+src/resources/data/output
+src/__pycache__
+src/jobs/__pycache__
+src/jobs/utils/__pycache__
