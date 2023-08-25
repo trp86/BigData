@@ -15,7 +15,7 @@ Introduction
 
 Application "app-nyc-taxi-analyzer" is a data pipeline developed using Apache Spark and Python.
 It reads csv files from a location (either HDFS or local file system), performs data quality, 
-data enrichment and stores the enriched data to another location (either HDFS or local file system). Below
+data enrichment and stores the enriched data to another location (either HDFS or local file system).Below
 are the steps or processes which are performed.
 
 - **Data Ingestion**
